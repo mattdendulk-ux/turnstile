@@ -1,0 +1,377 @@
+Conte Forum|Chestnut Hill|MA|Boston College|8,606
+Haas Pavilion|Berkeley|CA|California|11,858
+Littlejohn Coliseum|Clemson|SC|Clemson|9,000
+Cameron Indoor Stadium|Durham|NC|Duke|9,314
+Donald L. Tucker Civic Center|Tallahassee|FL|Florida State|12,100
+Hank McCamish Pavilion|Atlanta|GA|Georgia Tech|8,600
+KFC Yum! Center|Louisville|KY|Louisville|22,090
+Watsco Center|Coral Gables|FL|Miami (FL)|7,972
+Dean Smith Center|Chapel Hill|NC|North Carolina men|21,750
+Lenovo Center|Raleigh|NC|NC State men|19,500
+Purcell Pavilion at Edmund P. Joyce Center|Notre Dame|IN|Notre Dame|9,149
+Petersen Events Center|Pittsburgh|PA|Pittsburgh|12,508
+Moody Coliseum|University Park|TX|SMU|7,000
+Maples Pavilion|Stanford|CA|Stanford|7,233
+JMA Wireless Dome|Syracuse|NY|Syracuse|35,446
+John Paul Jones Arena|Charlottesville|VA|Virginia|14,593
+Cassell Coliseum|Blacksburg|VA|Virginia Tech|10,052
+Lawrence Joel Veterans Memorial Coliseum|Winston-Salem|NC|Wake Forest|14,407
+Broadview Center|Guilderland|NY|Albany|4,538
+Binghamton University Events Center|Vestal|NY|Binghamton|5,142
+Cross Insurance Center|Bangor|ME|Maine|5,800
+Lundholm Gym|Durham|NH|New Hampshire|3,000
+Chace Athletic Center|Smithfield|RI|Bryant|2,700
+Wellness and Events Center|Newark|NJ|NJIT|3,500
+Costello Athletic Center|Lowell|MA|UMass Lowell|2,100
+Tsongas Center|Lowell|MA|UMass Lowell|6,496
+Chesapeake Employers Insurance Arena|Catonsville|MD|UMBC|5,000
+Patrick Gym|Burlington|VT|Vermont|3,228
+Dale F. Halton Arena|Charlotte|NC|Charlotte|9,105
+Williams Arena at Minges Coliseum|Greenville|NC|East Carolina|8,000
+FAU Arena|Boca Raton|FL|Florida Atlantic|3,161
+FedExForum|Memphis|TN|Memphis|18,119
+UNT Coliseum|Denton|TX|North Texas|9,797
+Tudor Fieldhouse|Houston|TX|Rice|5,208
+Yuengling Center|Tampa|FL|South Florida|10,411
+Liacouras Center|Philadelphia|PA|Temple|10,206
+Devlin Fieldhouse|New Orleans|LA|Tulane|4,100
+Reynolds Center|Tulsa|OK|Tulsa|8,355
+Bartow Arena|Birmingham|AL|UAB|8,508
+Convocation Center|San Antonio|TX|UTSA|4,080
+Charles Koch Arena|Wichita|KS|Wichita State|10,506
+Knights Hall|Louisville|KY|Bellarmine|2,196
+Alico Arena|Fort Myers|FL|Florida Gulf Coast|4,633
+Swisher Gymnasium|Jacksonville|FL|Jacksonville|1,360
+Allen Arena|Nashville|TN|Lipscomb|5,028
+UNF Arena|Jacksonville|FL|North Florida|5,800
+Curry Arena|Charlotte|NC|Queens|2,500
+Edmunds Center|DeLand|FL|Stetson|5,000
+UWF Field House|Pensacola|FL|West Florida|1,750
+John M. Belk Arena|Davidson|NC|Davidson|5,223
+University of Dayton Arena|Dayton|OH|Dayton|13,409
+UPMC Cooper Fieldhouse|Pittsburgh|PA|Duquesne|3,500
+Rose Hill Gymnasium|Bronx|NY|Fordham|3,200
+EagleBank Arena|Fairfax|VA|George Mason|10,000
+Charles E. Smith Center|Washington|DC|George Washington|5,000
+John Glaser Arena|Philadelphia|PA|La Salle|3,000
+Joseph J. Gentile Arena|Chicago|IL|Loyola Chicago|4,486
+Ryan Center|Kingston|RI|Rhode Island|7,657
+Robins Center|Richmond|VA|Richmond|7,201
+Reilly Center|St. Bonaventure|NY|St. Bonaventure|5,480
+Hagan Arena|Philadelphia|PA|Saint Joseph's|3,800
+Chaifetz Arena|St. Louis|MO|Saint Louis|10,600
+Siegel Center|Richmond|VA|Virginia Commonwealth|7,637
+McKale Center|Tucson|AZ|Arizona|14,688
+Desert Financial Arena|Tempe|AZ|Arizona State|14,198
+Foster Pavilion|Waco|TX|Baylor|7,500
+Marriott Center|Provo|UT|BYU|19,000
+Fifth Third Arena|Cincinnati|OH|Cincinnati|12,012
+CU Events Center|Boulder|CO|Colorado|11,064
+Fertitta Center|Houston|TX|Houston|7,100
+Hilton Coliseum|Ames|IA|Iowa State|14,267
+Allen Fieldhouse|Lawrence|KS|Kansas|15,300
+Bramlage Coliseum|Manhattan|KS|Kansas State|11,000
+Gallagher-Iba Arena|Stillwater|OK|Oklahoma State|13,611
+Schollmaier Arena|Fort Worth|TX|TCU|8,500
+United Supermarkets Arena|Lubbock|TX|Texas Tech|15,300
+Addition Financial Arena|Orlando|FL|UCF|9,432
+Jon M. Huntsman Center|Salt Lake City|UT|Utah|15,000
+WVU Coliseum|Morgantown|WV|West Virginia|14,000
+Hinkle Fieldhouse|Indianapolis|IN|Butler|9,100
+CHI Health Center Omaha|Omaha|NE|Creighton men|18,320
+Wintrust Arena|Chicago|IL|DePaul|10,387
+Capital One Arena|Washington|DC|Georgetown men|20,308
+Fiserv Forum|Milwaukee|WI|Marquette men|17,385
+Amica Mutual Pavilion|Providence|RI|Providence men|12,400
+Prudential Center|Newark|NJ|Seton Hall men|18,711
+Walsh Gymnasium|South Orange|NJ|Seton Hall women|1,316
+Madison Square Garden|New York|NY|St. John's men|19,812
+Carnesecca Arena|Queens|NY|St. John's women|6,107
+Harry A. Gampel Pavilion|Storrs|CT|UConn|10,167
+Finneran Pavilion|Villanova|PA|Villanova|6,500
+Cintas Center|Cincinnati|OH|Xavier|10,250
+Reese Court|Cheney|WA|Eastern Washington|6,000
+Idaho Central Credit Union Arena|Moscow|ID|Idaho|4,200
+ICCU Dome|Pocatello|ID|Idaho State men|8,000
+Reed Gym|Pocatello|ID|Idaho State women|3,214
+Dahlberg Arena|Missoula|MT|Montana|7,321
+Brick Breeden Fieldhouse|Bozeman|MT|Montana State|7,250
+Walkup Skydome|Flagstaff|AZ|Northern Arizona|11,230
+Bank of Colorado Arena|Greeley|CO|Northern Colorado|2,992
+Viking Pavilion|Portland|OR|Portland State|3,094
+America First Event Center|Cedar City|UT|Southern Utah|5,300
+Burns Arena|St. George|UT|Utah Tech|4,779
+Dee Events Center|Ogden|UT|Weber State|11,592
+Buccaneer Field House|North Charleston|SC|Charleston Southern|881
+Paul Porter Arena|Boiling Springs|NC|Gardner–Webb|3,500
+Nido & Mariana Qubein Arena and Conference Center|High Point|NC|High Point|4,500
+Joan Perry Brock Center|Farmville|VA|Longwood|3,000
+Templeton Physical Education Center|Clinton|SC|Presbyterian|2,300
+Dedmon Center|Radford|VA|Radford|3,205
+Kimmel Arena|Asheville|NC|UNC Asheville|3,200
+G. B. Hodge Center|Spartanburg|SC|USC Upstate|878
+Winthrop Coliseum|Rock Hill|SC|Winthrop|6,100
+State Farm Center|Champaign|IL|Illinois|15,544
+Simon Skjodt Assembly Hall|Bloomington|IN|Indiana|17,472
+Carver–Hawkeye Arena|Iowa City|IA|Iowa|15,500
+Xfinity Center|College Park|MD|Maryland|17,300
+Crisler Center|Ann Arbor|MI|Michigan|12,707
+Breslin Student Events Center|East Lansing|MI|Michigan State|14,797
+Williams Arena|Minneapolis|MN|Minnesota|14,625
+Pinnacle Bank Arena|Lincoln|NE|Nebraska|15,147
+Welsh–Ryan Arena|Evanston|IL|Northwestern|7,039
+Value City Arena|Columbus|OH|Ohio State|18,809
+Matthew Knight Arena|Eugene|OR|Oregon|12,369
+Bryce Jordan Center|University Park|PA|Penn State|15,261
+Mackey Arena|West Lafayette|IN|Purdue|14,848
+Jersey Mike's Arena|Piscataway|NJ|Rutgers|8,000
+Pauley Pavilion|Los Angeles|CA|UCLA|13,800
+Galen Center|Los Angeles|CA|USC|10,258
+Alaska Airlines Arena at Hec Edmundson Pavilion|Seattle|WA|Washington|10,000
+Kohl Center|Madison|WI|Wisconsin|17,249
+Robert A. Mott Athletics Center|San Luis Obispo|CA|Cal Poly|3,032
+Icardo Center|Bakersfield|CA|Cal State Bakersfield|3,497
+Titan Gym|Fullerton|CA|Cal State Fullerton|4,000
+Premier America Credit Union Arena|Northridge|CA|Cal State Northridge|2,500
+Fowler Events Center|Riverside|CA|California Baptist|5,050
+LBS Financial Credit Union Pyramid|Long Beach|CA|Long Beach State|4,000
+Hornets Nest|Sacramento|CA|Sacramento State|1,012
+Bren Events Center|Irvine|CA|UC Irvine|4,984
+UC Riverside Student Recreation Center|Riverside|CA|UC Riverside|3,168
+LionTree Arena|La Jolla|CA|UC San Diego|4,200
+UC Santa Barbara Events Center|Santa Barbara|CA|UC Santa Barbara|5,600
+UCCU Center|Orem|UT|Utah Valley|7,500
+John W. Pope, Jr. Convocation Center|Buies Creek|NC|Campbell|3,095
+TD Arena|Charleston|SC|Charleston|5,100
+Daskalakis Athletic Center|Philadelphia|PA|Drexel|2,509
+Schar Center|Elon|NC|Elon|5,100
+Hampton Convocation Center|Hampton|VA|Hampton|7,200
+Mack Sports Complex|Hempstead|NY|Hofstra|5,124
+OceanFirst Bank Center|West Long Branch|NJ|Monmouth|4,100
+Corbett Sports Center|Greensboro|NC|North Carolina A&T|5,700
+Cabot Center|Boston|MA|Northeastern|1,800
+Island Federal Credit Union Arena|Stony Brook|NY|Stony Brook|4,160
+TU Arena|Towson|MD|Towson|5,200
+Trask Coliseum|Wilmington|NC|UNC Wilmington|5,200
+Kaplan Arena|Williamsburg|VA|William & Mary|11,300
+Bob Carpenter Center|Newark|DE|Delaware|5,000
+Ocean Bank Convocation Center|Miami|FL|FIU|5,000
+Pete Mathews Coliseum|Jacksonville|AL|Jacksonville State|3,500
+KSU Convocation Center|Kennesaw|GA|Kennesaw State|4,600
+Liberty Arena|Lynchburg|VA|Liberty|4,000
+Thomas Assembly Center|Ruston|LA|Louisiana Tech|8,000
+Murphy Center|Murfreesboro|TN|Middle Tennessee|11,520
+Great Southern Bank Arena|Springfield|MO|Missouri State|11,000
+Pan American Center|Las Cruces|NM|New Mexico State|12,482
+Bernard Johnson Coliseum|Huntsville|TX|Sam Houston|6,100
+E. A. Diddle Arena|Bowling Green|KY|Western Kentucky|7,326
+Wolstein Center|Cleveland|OH|Cleveland State|13,610
+Calihan Hall|Detroit|MI|Detroit Mercy|7,917
+Resch Center|Ashwaubenon|WI|Green Bay men|9,729
+James T. Morris Arena|Indianapolis|IN|IU Indy|4,500
+UW–Milwaukee Panther Arena|Milwaukee|WI|Milwaukee men|10,783
+Convocation Center|DeKalb|IL|Northern Illinois|10,000
+Truist Arena|Highland Heights|KY|Northern Kentucky|9,400
+OU Credit Union O'rena|Rochester|MI|Oakland|4,000
+Hilliard Gates Sports Center|Fort Wayne|IN|Purdue Fort Wayne|2,300
+UPMC Events Center|Moon Township|PA|Robert Morris|4,000
+Nutter Center|Fairborn|OH|Wright State|9,500
+Beeghly Center|Youngstown|OH|Youngstown State|6,300
+Pizzitola Sports Center|Providence|RI|Brown|2,800
+Levien Gymnasium|New York|NY|Columbia|2,500
+Newman Arena|Ithaca|NY|Cornell|4,473
+Leede Arena|Hanover|NH|Dartmouth|2,100
+Lavietes Pavilion|Allston|MA|Harvard|2,195
+Palestra|Philadelphia|PA|Penn|8,722
+Jadwin Gymnasium|Princeton|NJ|Princeton|6,854
+John J. Lee Amphitheater|New Haven|CT|Yale|2,532
+Koessler Athletic Center|Buffalo|NY|Canisius|2,196
+Leo D. Mahoney Arena|Fairfield|CT|Fairfield|3,500
+Hynes Athletic Center|New Rochelle|NY|Iona|2,578
+Draddy Gymnasium|Bronx|NY|Manhattan|2,345
+McCann Arena|Poughkeepsie|NY|Marist|3,200
+Hammel Court|North Andover|MA|Merrimack|1,200
+Knott Arena|Emmitsburg|MD|Mount St. Mary's|3,500
+Gallagher Center|Lewiston|NY|Niagara|2,400
+M&T Bank Arena|Hamden|CT|Quinnipiac|3,570
+Alumni Gymnasium|Lawrenceville|NJ|Rider|1,650
+William H. Pitt Center|Fairfield|CT|Sacred Heart|2,062
+MVP Arena|Albany|NY|Siena men|15,229
+Run Baby Run Arena|Jersey City|NJ|Saint Peter's|3,200
+James A. Rhodes Arena|Akron|OH|Akron|5,500
+Worthen Arena|Muncie|IN|Ball State|11,500
+Stroh Center|Bowling Green|OH|Bowling Green|4,700
+Alumni Arena|Amherst|NY|Buffalo|6,783
+McGuirk Arena|Mount Pleasant|MI|Central Michigan|5,300
+George Gervin GameAbove Center|Ypsilanti|MI|Eastern Michigan|8,824
+Memorial Athletic and Convocation Center|Kent|OH|Kent State|6,327
+Mullins Center|Amherst|MA|Massachusetts|9,493
+Millett Hall|Oxford|OH|Miami (Ohio)|10,640
+Convocation Center|Athens|OH|Ohio|13,080
+Savage Arena|Toledo|OH|Toledo|7,300
+University Arena|Kalamazoo|MI|Western Michigan|5,421
+Physical Education Complex|Baltimore|MD|Coppin State|4,100
+Memorial Hall|Dover|DE|Delaware State|1,800
+Burr Gymnasium|Washington|DC|Howard|2,700
+Hytche Athletic Center|Princess Anne|MD|Maryland Eastern Shore|5,500
+Talmadge L. Hill Field House|Baltimore|MD|Morgan State|4,250
+Joseph G. Echols Memorial Hall|Norfolk|VA|Norfolk State|4,500
+McDougald–McLendon Arena|Durham|NC|North Carolina Central|3,500
+SHM Memorial Center|Orangeburg|SC|South Carolina State|3,200
+Curb Event Center|Nashville|TN|Belmont|5,085
+Carver Arena|Peoria|IL|Bradley men|11,433
+Knapp Center|Des Moines|IA|Drake|6,424
+Ford Center|Evansville|IN|Evansville men|10,000
+CEFCU Arena|Normal|IL|Illinois State|10,200
+Hulman Center|Terre Haute|IN|Indiana State|10,200
+CFSB Center|Murray|KY|Murray State|8,602
+McLeod Center|Cedar Falls|IA|Northern Iowa|7,018
+Banterra Center|Carbondale|IL|Southern Illinois|8,284
+Credit Union 1 Arena|Chicago|IL|UIC|6,958
+Athletics–Recreation Center|Valparaiso|IN|Valparaiso|5,000
+Clune Arena|USAF Academy|CO|Air Force|5,508
+Global Credit Union Arena|Phoenix|AZ|Grand Canyon|7,000
+Stan Sheriff Center|Honolulu|HI|Hawaii|10,300
+Lawlor Events Center|Reno|NV|Nevada|11,536
+The Pit|Albuquerque|NM|New Mexico|15,411
+Provident Credit Union Event Center|San Jose|CA|San Jose State|5,000
+Thomas & Mack Center|Paradise|NV|UNLV men|18,776
+University Credit Union Center|Davis|CA|UC Davis|7,600
+Don Haskins Center|El Paso|TX|UTEP|12,222
+Arena-Auditorium|Laramie|WY|Wyoming|11,612
+William H. Detrick Gymnasium|New Britain|CT|Central Connecticut|2,654
+Emil and Patricia Jones Convocation Center|Chicago|IL|Chicago State|7,000
+Bogota Savings Bank Center|Hackensack|NJ|Fairleigh Dickinson|1,862
+Le Moyne Events Center|DeWitt|NY|Le Moyne|2,000
+Steinberg Wellness Center|Brooklyn|NY|LIU|2,500
+Mercyhurst Athletic Center|Erie|PA|Mercyhurst|1,100
+Jeffery P. Hazell Athletics Center|West Haven|CT|New Haven|900
+Merkert Gymnasium|Easton|MA|Stonehill|1,560
+Spiro Sports Center|Staten Island|NY|Wagner|2,100
+Lantz Arena|Charleston|IL|Eastern Illinois|5,400
+Robert F. Hyland Performance Arena|St. Charles|MO|Lindenwood|3,270
+Ellis Johnson Arena|Morehead|KY|Morehead State|6,500
+Show Me Center|Cape Girardeau|MO|Southeast Missouri State|7,373
+Vadalabene Center|Edwardsville|IL|SIU Edwardsville|4,000
+Liberty Arena, Home of the Screaming Eagles|Evansville|IN|Southern Indiana|4,800
+Kathleen and Tom Elam Center|Martin|TN|Tennessee-Martin|4,300
+Gentry Complex|Nashville|TN|Tennessee State|9,100
+Western Hall|Macomb|IL|Western Illinois|5,139
+ExtraMile Arena|Boise|ID|Boise State|12,644
+Moby Arena|Fort Collins|CO|Colorado State|8,083
+Save Mart Center at Fresno State|Fresno|CA|Fresno State|15,596
+McCarthey Athletic Center|Spokane|WA|Gonzaga|6,000
+Gill Coliseum|Corvallis|OR|Oregon State|9,301
+Viejas Arena|San Diego|CA|San Diego State|12,414
+Strahan Arena|San Marcos|TX|Texas State|10,000
+Smith Spectrum|Logan|UT|Utah State|10,270
+Beasley Coliseum|Pullman|WA|Washington State|12,058
+Bender Arena|Washington|DC|American|4,500
+Christl Arena|West Point|NY|Army|5,043
+Case Gym|Boston|MA|Boston University|1,800
+Sojka Pavilion|Lewisburg|PA|Bucknell|4,000
+Cotterell Court|Hamilton|NY|Colgate|1,750
+Hart Center at the Luth Athletics Complex|Worcester|MA|Holy Cross|3,536
+Kirby Sports Center|Easton|PA|Lafayette|2,453
+Stabler Arena|Bethlehem|PA|Lehigh|5,600
+Reitz Arena|Baltimore|MD|Loyola (Maryland)|2,100
+Alumni Hall|Annapolis|MD|Navy|5,710
+Coleman Coliseum|Tuscaloosa|AL|Alabama|15,383
+Bud Walton Arena|Fayetteville|AR|Arkansas|19,368
+Neville Arena|Auburn|AL|Auburn|9,121
+Exactech Arena at the Stephen C. O'Connell Center|Gainesville|FL|Florida|10,500
+Stegeman Coliseum|Athens|GA|Georgia|10,523
+Rupp Arena|Lexington|KY|Kentucky men|20,545
+Pete Maravich Assembly Center|Baton Rouge|LA|LSU|13,215
+Lloyd Noble Center|Norman|OK|Oklahoma|11,528
+The Sandy and John Black Pavilion at Ole Miss|University|MS|Ole Miss|9,500
+Humphrey Coliseum|Mississippi State|MS|Mississippi State|10,575
+Mizzou Arena|Columbia|MO|Missouri|15,061
+Colonial Life Arena|Columbia|SC|South Carolina|18,000
+Thompson–Boling Arena|Knoxville|TN|Tennessee|21,678
+Moody Center|Austin|TX|Texas|10,763
+Reed Arena|College Station|TX|Texas A&M|12,989
+Memorial Gymnasium|Nashville|TN|Vanderbilt|14,316
+McKenzie Arena|Chattanooga|TN|Chattanooga|10,995
+McAlister Field House|Charleston|SC|The Citadel|6,000
+Freedom Hall Civic Center|Johnson City|TN|East Tennessee State|6,149
+Timmons Arena|Greenville|SC|Furman|4,000
+Hawkins Arena|Macon|GA|Mercer|3,500
+Pete Hanna Center|Homewood|AL|Samford|4,974
+Hooper Eblen Center|Cookeville|TN|Tennessee Tech|9,280
+First Horizon Coliseum|Greensboro|NC|UNC Greensboro|7,613
+Cameron Hall|Lexington|VA|VMI|5,029
+Liston B. Ramsey Regional Activity Center|Cullowhee|NC|Western Carolina|7,826
+Jerry Richardson Indoor Stadium|Spartanburg|SC|Wofford|3,400
+The Field House|Commerce|TX|East Texas A&M|3,055
+Sharp Gymnasium|Houston|TX|Houston Christian|1,000
+McDermott Center|San Antonio|TX|Incarnate Word|2,000
+Neches Federal Credit Union Arena at the Montagne Center|Beaumont|TX|Lamar|10,080
+Townsley Law Arena|Lake Charles|LA|McNeese|4,242
+Lakefront Arena|New Orleans|LA|New Orleans|8,933
+Stopher Gymnasium|Thibodaux|LA|Nicholls|3,800
+Prather Coliseum|Natchitoches|LA|Northwestern State|3,900
+University Center|Hammond|LA|Southeastern Louisiana|7,500
+William R. Johnson Coliseum|Nacogdoches|TX|Stephen F. Austin|7,203
+American Bank Center Arena|Corpus Christi|TX|Texas A&M-Corpus Christi|8,000
+UTRGV Fieldhouse|Edinburg|TX|UTRGV|2,500
+Swinney Recreation Center|Kansas City|MO|Kansas City|1,500
+Betty Engelstad Sioux Center|Grand Forks|ND|North Dakota|3,300
+Scheels Center|Fargo|ND|North Dakota State|5,460
+Baxter Arena|Omaha|NE|Omaha|7,898
+Mabee Center|Tulsa|OK|Oral Roberts|10,154
+Lee and Penny Anderson Arena|Saint Paul|MN|St. Thomas|5,000
+Sanford Coyote Sports Center|Vermillion|SD|South Dakota|6,000
+First Bank and Trust Arena|Brookings|SD|South Dakota State|6,500
+George M. Holmes Convocation Center|Boone|NC|Appalachian State|8,325
+First National Bank Arena|Jonesboro|AR|Arkansas State|10,038
+HTC Center|Conway|SC|Coastal Carolina|3,212
+Jack and Ruth Ann Hill Convocation Center|Statesboro|GA|Georgia Southern|5,500
+Georgia State Convocation Center|Atlanta|GA|Georgia State|7,500
+Atlantic Union Bank Center|Harrisonburg|VA|James Madison|8,500
+Cajundome|Lafayette|LA|Louisiana|13,500
+Fant–Ewing Coliseum|Monroe|LA|Louisiana–Monroe|7,085
+Cam Henderson Center|Huntington|WV|Marshall|9,048
+Chartway Arena|Norfolk|VA|Old Dominion|8,472
+Mitchell Center|Mobile|AL|South Alabama|10,041
+Reed Green Coliseum|Hattiesburg|MS|Southern Miss|8,095
+Trojan Arena|Troy|AL|Troy|5,200
+Alabama A&M Events Center|Normal|AL|Alabama A&M|6,000
+Dunn–Oliver Acadome|Montgomery|AL|Alabama State|7,400
+Davey Whitney Complex|Lorman|MS|Alcorn State|7,000
+K. L. Johnson Complex|Pine Bluff|AR|Arkansas-Pine Bluff|4,500
+Moore Gymnasium|Daytona Beach|FL|Bethune-Cookman|3,000
+Al Lawson Center|Tallahassee|FL|Florida A&M|9,639
+Fredrick C. Hobdy Assembly Center|Grambling|LA|Grambling|7,500
+Williams Assembly Center|Jackson|MS|Jackson State|8,000
+Harrison HPER Complex|Itta Bena|MS|Mississippi Valley State|5,000
+William J. Nicks Building|Prairie View|TX|Prairie View A&M|4,000
+F. G. Clark Activity Center|Baton Rouge|LA|Southern|7,500
+Health and Physical Education Arena|Houston|TX|Texas Southern|8,100
+Moody Coliseum|Abilene|TX|Abilene Christian|3,600
+F&M Bank Arena|Clarksville|TN|Austin Peay|5,500
+Farris Center|Conway|AR|Central Arkansas|6,000
+Baptist Health Arena|Richmond|KY|Eastern Kentucky|6,500
+Jack Stephens Center|Little Rock|AR|Little Rock|5,600
+Flowers Hall|Florence|AL|North Alabama|4,000
+EECU Center|Stephenville|TX|Tarleton State|8,000
+College Park Center|Arlington|TX|UT Arlington|7,000
+The Coliseum|Carrollton|GA|West Georgia|5,953
+Hamilton Gymnasium|Denver|CO|Denver|2,500
+Gersten Pavilion|Los Angeles|CA|Loyola Marymount|3,900
+Alex G. Spanos Center|Stockton|CA|Pacific|6,150
+Firestone Fieldhouse|Malibu|CA|Pepperdine|3,104
+Chiles Center|Portland|OR|Portland|4,852
+University Credit Union Pavilion|Moraga|CA|Saint Mary's|3,500
+Jenny Craig Pavilion|San Diego|CA|San Diego|5,100
+The Sobrato Center|San Francisco|CA|San Francisco|3,005
+Leavey Center|Santa Clara|CA|Santa Clara|4,500
+Redhawk Center|Seattle|WA|Seattle|999
+Intrust Bank Arena|Wichita|KS|Wichita State men, Kansas State men|15,004
+T-Mobile Center|Kansas City|MO|Kansas men, Kansas State men|18,972
+Xfinity Mobile Arena|Philadelphia|PA|Villanova men|20,318
+PeoplesBank Arena|Hartford|CT|UConn|16,294
+North Charleston Coliseum|North Charleston|SC|Charleston Southern|11,475
+Vines Center|Lynchburg|VA|Liberty|9,547
+Climate Pledge Arena|Seattle|WA|Seattle men|18,100
+Dignity Health Arena|Bakersfield|CA|Cal State Bakersfield|9,333

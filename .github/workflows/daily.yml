@@ -1,0 +1,39 @@
+name: Daily attendance update
+
+on:
+  schedule:
+    - cron: "17 13 * * *"   # 13:17 UTC = 8:17am ET / 5:17am PT, after late West Coast games post
+  workflow_dispatch:         # "Run workflow" button for a manual refresh or a backfill
+    inputs:
+      start:
+        description: "Backfill start date, YYYYMMDD (leave blank for a normal daily run)"
+        required: false
+      end:
+        description: "Backfill end date, YYYYMMDD"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Pull box scores
+        env:
+          START: ${{ inputs.start }}
+          END: ${{ inputs.end }}
+        run: python scraper/scrape.py $START $END
+      - run: python scraper/build_arenas.py   # match any new venues to capacities
+      - name: Commit new data
+        run: |
+          git config user.name "turnstile-bot"
+          git config user.email "turnstile-bot@users.noreply.github.com"
+          git add data/games.json data/arenas.json
+          git diff --cached --quiet || git commit -m "Attendance update $(date -u +%F)"
+          git push

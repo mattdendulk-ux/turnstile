@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turnstile</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: arena scoreboard strip up top, tabbed ledger below — every number reads like a turnstile count */
+:root {
+  --paper: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #14202e;
+  --muted: #5d6b7a;
+  --rule: #d8dee5;
+  --accent: #d4561c;       /* shot-clock orange */
+  --accent-soft: #fbe6dc;
+  --court: #1e3a5f;        /* home-court navy */
+  --good: #2f7d4f;
+  --bad: #b23a2b;
+  --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0f161f; --surface: #17212d; --ink: #e6ebf0; --muted: #93a1b0; --rule: #2a3746;
+  --accent: #f07a42; --accent-soft: #3a2419; --court: #8fb4dd; --good: #5cbf85; --bad: #f07a6a;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #0f161f; --surface: #17212d; --ink: #e6ebf0; --muted: #93a1b0; --rule: #2a3746;
+  --accent: #f07a42; --accent-soft: #3a2419; --court: #8fb4dd; --good: #5cbf85; --bad: #f07a6a;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--font-body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.num, td.n, th.n { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+
+header { position: relative; overflow: hidden; padding-block: 40px 24px; border-bottom: 1px solid var(--rule); }
+header > .wrap { position: relative; }
+.court { position: absolute; inset: 0 0 auto 0; width: 100%; height: 100%; fill: none; stroke: var(--court); stroke-width: 3; opacity: 0.09;
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent 80%); mask-image: linear-gradient(to bottom, #000 30%, transparent 80%); pointer-events: none; }
+.png-btn { display: inline-flex; align-items: center; gap: 6px; font: 600 13px var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 7px 11px; cursor: pointer; white-space: nowrap; }
+.png-btn:hover { border-color: var(--accent); color: var(--accent); }
+.png-btn:focus-visible, .modal a:focus-visible, .modal button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.brand-btn { margin-left: auto; align-self: center; }
+.charts { position: relative; display: grid; gap: 20px; }
+.chart-card { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 18px 12px; min-width: 0; }
+.chart-card figcaption { margin-bottom: 6px; }
+.chart-card .controls { margin: 0; }
+.chart { min-width: 0; overflow: hidden; }
+.chart svg { display: block; max-width: 100%; height: auto; }
+.chart text { fill: var(--muted); font: 12px var(--font-data); }
+.chart text.c-cat { fill: var(--ink); font: 500 13px var(--font-body); }
+.chart text.c-reflabel { fill: var(--accent); font: 600 12px var(--font-body); }
+.c-grid { stroke: var(--rule); stroke-width: 1; }
+.c-line { fill: none; stroke: var(--court); stroke-width: 2; stroke-linejoin: round; }
+.c-area { fill: var(--court); opacity: 0.08; }
+.c-bar { fill: var(--court); }
+.c-dot { fill: var(--court); stroke: var(--surface); stroke-width: 1.5; }
+.c-dot.c-hl { fill: var(--accent); }
+.c-dot.c-dim { opacity: 0.25; }
+.c-ref { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.c-cross { stroke: var(--muted); stroke-width: 1; }
+.c-cross[hidden] { display: none; }
+.c-hit { fill: transparent; cursor: default; }
+.chart-tip { position: absolute; z-index: 5; pointer-events: none; background: var(--ink); color: var(--paper); font: 12px/1.45 var(--font-body); padding: 7px 9px; border-radius: 4px; max-width: 260px; box-shadow: 0 4px 14px rgb(0 0 0 / 0.18); }
+.chart-tip b { font-weight: 600; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; margin-bottom: 4px; }
+.sec-head h2 { margin: 0; }
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: rgb(8 14 22 / 0.72);
+  padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.modal[hidden] { display: none; }
+.modal-box { background: var(--surface); color: var(--ink); border-radius: 8px; width: min(520px, 100%); max-height: 100%; overflow: auto; padding: 16px; display: grid; gap: 12px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.modal-head h3 { font: 700 18px/1.2 var(--font-display); text-transform: uppercase; letter-spacing: 0.04em; margin: 0; }
+.modal img { display: block; width: 100%; height: auto; border-radius: 4px; border: 1px solid var(--rule); }
+.modal-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 13px; color: var(--muted); }
+.modal-actions .dl { font: 600 14px var(--font-body); color: #fff; background: var(--accent); border-radius: 4px; padding: 9px 16px; text-decoration: none; }
+.modal-actions span { flex: 1 1 200px; }
+.brand { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+h1 { font: 800 clamp(48px, 9vw, 84px)/0.9 var(--font-display); letter-spacing: 0.01em; margin: 0; text-transform: uppercase; }
+h1 span { color: var(--accent); }
+.tag { font: 600 13px/1.3 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { max-width: 62ch; color: var(--muted); margin: 14px 0 0; text-wrap: pretty; }
+
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-top: 28px; }
+.board > div { background: var(--surface); padding: 16px 18px; min-width: 0; }
+.board .k { font: 600 11px/1.2 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.board .v { font: 800 38px/1.05 var(--font-display); margin-top: 6px; }
+.board .s { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.up { color: var(--good); } .down { color: var(--bad); }
+@media (max-width: 720px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.daily { margin-top: 18px; padding-block: 12px 14px; border-bottom: 1px solid var(--rule); }
+.daily-head { font: 600 11px/1.2 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.daily-head #daily-date { color: var(--accent); }
+.daily-stats { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 8px; }
+.daily-stats > div { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.daily-stats .dk { font-size: 13px; color: var(--muted); }
+.daily-stats .dv { font: 800 24px/1 var(--font-display); }
+.daily-stats .dx { font-size: 13px; color: var(--muted); }
+nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin: 20px 0 0; border-bottom: 1px solid var(--rule); }
+nav.tabs a { font: 700 18px/1 var(--font-display); letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 12px 14px 10px; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-color: var(--accent); }
+nav.tabs a:hover { color: var(--ink); }
+nav.tabs a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, th button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main { padding-block: 20px 48px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; margin-bottom: 14px; }
+.controls label { display: grid; gap: 4px; font: 600 11px/1.2 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.controls input[type="search"], .controls select { font: 400 14px var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; min-width: 0; }
+.controls input[type="search"] { width: 220px; max-width: 100%; }
+.controls .check { display: flex; align-items: center; gap: 6px; text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 500; color: var(--ink); padding-bottom: 8px; }
+.count { margin-left: auto; font-size: 13px; color: var(--muted); padding-bottom: 8px; }
+
+.table-box { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+th { font: 600 11px/1.2 var(--font-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--surface); position: sticky; top: 0; }
+th.n, td.n { text-align: right; }
+th button { all: unset; cursor: pointer; }
+th button[aria-sort]::after { content: " ↓"; color: var(--accent); }
+th button[aria-sort="ascending"]::after { content: " ↑"; }
+tbody tr:hover { background: var(--accent-soft); }
+td.rank { color: var(--muted); font-family: var(--font-data); width: 1%; }
+td.team { font-weight: 600; }
+td.dim, .dim { color: var(--muted); }
+.w { font-weight: 600; }
+.pill { display: inline-block; font: 600 10px/1 var(--font-body); letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 6px; border-radius: 3px; border: 1px solid var(--rule); color: var(--muted); margin-left: 6px; vertical-align: 1px; }
+.pill.neu { border-color: var(--court); color: var(--court); }
+.na { color: var(--muted); font-family: var(--font-body); font-size: 12px; font-style: italic; }
+.att { font-weight: 500; }
+.bar { position: relative; height: 10px; background: var(--rule); border-radius: 2px; min-width: 120px; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--court); border-radius: 2px; }
+.mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--accent); }
+.fill { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.fill .meter { width: 44px; height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+.fill .meter i { display: block; height: 100%; background: var(--court); }
+.fill.low .meter i { background: var(--bad); }
+.fill.over .meter i { background: var(--good); }
+.split { row-gap: 32px; }
+.summary { margin: -4px 0 12px; font-size: 14px; color: var(--muted); }
+.summary b { color: var(--ink); font-family: var(--font-data); font-variant-numeric: tabular-nums; font-weight: 500; }
+td a.date-link { color: var(--ink); font-weight: 600; text-decoration: none; border-bottom: 1px dotted var(--muted); }
+td a.date-link:hover { color: var(--accent); border-color: var(--accent); }
+.more { display: block; margin: 14px auto 0; font: 600 14px var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 9px 18px; cursor: pointer; }
+.more:hover { border-color: var(--accent); }
+
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 820px) { .split { grid-template-columns: minmax(0, 1fr); } }
+h2 { font: 800 26px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 4px; }
+.sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.legend i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; background: var(--court); vertical-align: -1px; margin-right: 6px; }
+.legend i.b { width: 2px; height: 14px; background: var(--accent); vertical-align: -3px; }
+
+.notes { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 32px; border-top: 1px solid var(--rule); padding-block: 32px 48px; font-size: 14px; color: var(--muted); }
+.notes h3 { font: 700 16px/1.2 var(--font-display); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); margin: 0 0 8px; }
+.notes p { margin: 0 0 10px; max-width: 65ch; }
+.hire { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 4px; padding: 18px 20px; color: var(--ink); }
+.hire p { color: var(--muted); }
+.hire a { color: var(--accent); font-weight: 600; user-select: all; overflow-wrap: anywhere; }
+.hire .contact { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 0; }
+.copy { font: 600 12px var(--font-body); color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+.copy:hover { border-color: var(--accent); }
+@media (max-width: 820px) { .notes { grid-template-columns: minmax(0, 1fr); } }
+.empty { padding: 40px; text-align: center; color: var(--muted); }
+.m-sub { display: none; }
+
+/* ---- Phone layout ---- */
+@media (max-width: 640px) {
+  body { font-size: 14px; }
+  header { padding-block: 24px 16px; }
+  .brand { row-gap: 8px; }
+  .tag { font-size: 11px; }
+  .brand-btn { margin-left: 0; padding: 6px 10px; }
+  .lede { font-size: 14px; margin-top: 10px; }
+  .board { margin-top: 18px; }
+  .board > div { padding: 12px 14px; }
+  .board .v { font-size: 30px; }
+  .board .s { font-size: 12px; }
+  .daily { margin-top: 14px; }
+  .daily-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .daily-stats > div { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .daily-stats .dk, .daily-stats .dx { font-size: 12px; }
+  .daily-stats .dv { font-size: 24px; }
+
+  /* Tabs: one row that scrolls sideways */
+  nav.tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 0; margin-top: 14px;
+    -webkit-mask-image: linear-gradient(to right, #000 85%, transparent); mask-image: linear-gradient(to right, #000 85%, transparent); }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  nav.tabs a { font-size: 16px; padding: 12px 10px 9px; white-space: nowrap; flex: 0 0 auto; }
+
+  main { padding-block: 16px 36px; }
+  h2 { font-size: 22px; }
+  .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: end; }
+  .controls label:has(input[type="search"]) { grid-column: 1 / -1; }
+  .controls select, .controls input[type="search"] { width: 100%; font-size: 16px; }
+  .controls .check { padding-bottom: 4px; }
+  .controls .count { grid-column: 1 / -1; margin-left: 0; padding-bottom: 0; }
+  .controls .png-btn { justify-self: start; }
+  .summary { font-size: 13px; }
+
+  th, td { padding: 9px 10px; }
+  th { white-space: normal; font-size: 10px; letter-spacing: 0.05em; line-height: 1.25; vertical-align: bottom; }
+  th.n { max-width: 84px; }
+  td.n { font-size: 13px; }
+  td { white-space: normal; }
+  td.n { white-space: nowrap; }
+  .m-sub { display: block; margin-top: 2px; font: 400 12px/1.3 var(--font-body); color: var(--muted); }
+  .fill { gap: 6px; }
+  .fill .meter { width: 30px; }
+
+  /* Rankings tables: keep the columns that matter, the rest move under the name */
+  .table-box:has(#t-body) :is(th, td):is(:nth-child(3), :nth-child(4), :nth-child(6), :nth-child(7), :nth-child(8), :nth-child(10)) { display: none; }
+  .table-box:has(#c-body) :is(th, td):is(:nth-child(3), :nth-child(4), :nth-child(7), :nth-child(8)) { display: none; }
+  .table-box:has(#d-body) :is(th, td):is(:nth-child(2), :nth-child(3), :nth-child(5), :nth-child(6), :nth-child(8)) { display: none; }
+
+  /* Games: each game becomes a compact card */
+  .table-box:has(#g-body) thead { display: none; }
+  #g-body tr { display: grid; grid-template-columns: auto auto minmax(0, 1fr); grid-template-areas: "m m m" "d f v" "a c p";
+    gap: 4px 10px; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+  #g-body tr:last-child { border-bottom: 0; }
+  #g-body td { padding: 0; border: 0; text-align: left; }
+  #g-body td[colspan] { grid-column: 1 / -1; padding: 24px 0; text-align: center; }
+  #g-body td:nth-child(1) { grid-area: d; font-size: 12px; }
+  #g-body td:nth-child(2) { grid-area: m; font-size: 15px; }
+  #g-body td:nth-child(3) { grid-area: f; font-size: 12px; color: var(--muted); }
+  #g-body td:nth-child(4) { grid-area: v; font-size: 12px; overflow-wrap: anywhere; }
+  #g-body td:nth-child(5) { grid-area: a; font-size: 16px; }
+  #g-body td:nth-child(6) { grid-area: c; font-size: 12px; align-self: center; }
+  #g-body td:nth-child(6)[data-cap]::before { content: "of "; }
+  #g-body td:nth-child(6)[data-cap]::after { content: " seats"; }
+  #g-body td:nth-child(6):not([data-cap]) { visibility: hidden; }
+  #g-body td:nth-child(7) { grid-area: p; justify-self: end; align-self: center; }
+
+  .notes { gap: 24px; padding-block: 24px 36px; }
+}
+@media (prefers-reduced-motion: no-preference) { tbody tr { transition: background .12s; } }
+</style>
+</head>
+<body>
+
+<header>
+  <svg class="court" id="court" viewBox="0 0 940 500" preserveAspectRatio="xMidYMin slice" aria-hidden="true"></svg>
+  <div class="wrap">
+    <div class="brand">
+      <h1>Turn<span>stile</span></h1>
+      <div class="tag">College basketball attendance tracker</div>
+      <button type="button" class="png-btn brand-btn" data-graphic="summary" title="Download the season snapshot as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button>
+    </div>
+    <p class="lede">Every reported crowd from NCAA Division I men's games, updated each morning from box scores. Rankings use home games only, so neutral-site showcases don't pad a team's numbers.</p>
+    <div class="board" id="board" aria-live="polite">
+      <div><div class="k">D1 home average</div><div class="v num" id="b-avg">–</div><div class="s" id="b-avg-s">Loading games…</div></div>
+      <div><div class="k">Games tracked</div><div class="v num" id="b-games">–</div><div class="s" id="b-games-s"></div></div>
+      <div><div class="k">Home seats filled</div><div class="v num" id="b-fill">–</div><div class="s" id="b-fill-s"></div></div>
+      <div><div class="k">Biggest crowd</div><div class="v num" id="b-max">–</div><div class="s" id="b-max-s"></div></div>
+    </div>
+    <div class="daily" id="daily" aria-live="polite">
+      <div class="daily-head"><span id="daily-label">Most recent day</span> · <span id="daily-date"></span></div>
+      <div class="daily-stats">
+        <div><span class="dk">Home seats filled</span><span class="dv num" id="daily-fill">–</span></div>
+        <div><span class="dk">Avg. home crowd</span><span class="dv num" id="daily-avg">–</span></div>
+        <div><span class="dk">Largest crowd</span><span class="dv num" id="daily-max">–</span><span class="dx" id="daily-max-s"></span></div>
+        <div><span class="dk">D1 home games</span><span class="dv num" id="daily-n">–</span></div>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Views">
+      <a href="#games" data-view="games">Games</a>
+      <a href="#teams" data-view="teams">Team rankings</a>
+      <a href="#conferences" data-view="conferences">Conferences</a>
+      <a href="#days" data-view="days">By day</a>
+      <a href="#charts" data-view="charts">Charts</a>
+      <a href="#extremes" data-view="extremes">Biggest &amp; smallest</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- GAMES -->
+  <section id="v-games" data-section="games">
+    <div class="controls">
+      <label for="g-date">Date<select id="g-date"><option value="">All dates</option></select></label>
+      <label for="g-conf">Conference<select id="g-conf" class="conf-select"><option value="">All conferences</option></select></label>
+      <label for="g-q">Team<input type="search" id="g-q" list="schools" placeholder="Type or pick a school" autocomplete="off"></label>
+      <label for="g-sort">Sort<select id="g-sort"><option value="date">Newest first</option><option value="att">Largest crowd</option><option value="attAsc">Smallest crowd</option><option value="fill">Fullest arena</option><option value="fillAsc">Emptiest arena</option></select></label>
+      <label class="check" for="g-home"><input type="checkbox" id="g-home"> Home games only</label>
+      <label class="check" for="g-rep"><input type="checkbox" id="g-rep"> Reported only</label>
+      <span class="count" id="g-count"></span>
+      <datalist id="schools"></datalist>
+    </div>
+    <p class="summary" id="g-summary" aria-live="polite"></p>
+    <div class="table-box"><table>
+      <thead><tr><th>Date</th><th>Matchup</th><th class="n">Final</th><th>Venue</th><th class="n">Attendance</th><th class="n">Capacity</th><th class="n">% of capacity</th></tr></thead>
+      <tbody id="g-body"></tbody>
+    </table></div>
+    <button class="more" id="g-more" hidden>Show more games</button>
+  </section>
+
+  <!-- TEAMS -->
+  <section id="v-teams" data-section="teams" hidden>
+    <div class="controls">
+      <label for="t-conf">Conference<select id="t-conf" class="conf-select"><option value="">All conferences</option></select></label>
+      <label for="t-q">Team<input type="search" id="t-q" list="schools" placeholder="Type or pick a school" autocomplete="off"></label>
+      <label for="t-min">Minimum home games<select id="t-min"><option value="1">1+</option><option value="2" selected>2+</option><option value="3">3+</option><option value="4">4+</option></select></label>
+      <span class="count" id="t-count"></span>
+      <button type="button" class="png-btn" data-graphic="teams" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button>
+    </div>
+    <div class="table-box"><table>
+      <thead><tr>
+        <th>#</th><th><button data-sort="name">Team</button></th><th><button data-sort="conf">Conf.</button></th>
+        <th class="n"><button data-sort="games">Home games</button></th>
+        <th class="n"><button data-sort="avg" aria-sort="descending">Avg.</button></th>
+        <th class="n"><button data-sort="high">High</button></th>
+        <th class="n"><button data-sort="low">Low</button></th>
+        <th class="n"><button data-sort="cap">Capacity</button></th>
+        <th class="n"><button data-sort="fill">% of capacity</button></th>
+        <th class="n"><button data-sort="total">Total</button></th>
+      </tr></thead>
+      <tbody id="t-body"></tbody>
+    </table></div>
+  </section>
+
+  <!-- CONFERENCES -->
+  <section id="v-conferences" data-section="conferences" hidden>
+    <div class="sec-head"><h2>Conference home averages</h2><button type="button" class="png-btn" data-graphic="confs" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+    <p class="sub">Reported home games of each conference's members, neutral sites excluded. Click a column heading to sort. % of capacity is total home attendance divided by total seats available in those games.</p>
+    <div class="legend"><span><i></i>This season</span><span><i class="b"></i>All-D1 average this season</span></div>
+    <div class="table-box"><table>
+      <thead><tr><th>#</th><th><button data-csort="name">Conference</button></th><th class="n"><button data-csort="teams">Teams</button></th><th class="n"><button data-csort="n">Home games</button></th><th class="n"><button data-csort="avg" aria-sort="descending">Avg.</button></th><th class="n"><button data-csort="fill">% of capacity</button></th><th class="n"><button data-csort="high">Biggest crowd</button></th><th style="width:30%">Compared with D1 average</th></tr></thead>
+      <tbody id="c-body"></tbody>
+    </table></div>
+  </section>
+
+  <!-- BY DAY -->
+  <section id="v-days" data-section="days" hidden>
+    <div class="sec-head"><h2>Home seats filled by day</h2><button type="button" class="png-btn" data-graphic="days" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+    <p class="sub">D1 home games each day with a reported crowd. % of capacity is that day's home attendance divided by the seats available. Click a column heading to sort, or a date to see its games.</p>
+    <div class="table-box"><table>
+      <thead><tr>
+        <th><button data-dsort="date" aria-sort="descending">Date</button></th>
+        <th class="n"><button data-dsort="games">All games</button></th>
+        <th class="n"><button data-dsort="n">Home games</button></th>
+        <th class="n"><button data-dsort="avg">Avg. home crowd</button></th>
+        <th class="n"><button data-dsort="att">Home attendance</button></th>
+        <th class="n"><button data-dsort="cap">Seats available</button></th>
+        <th class="n"><button data-dsort="fill">% of capacity</button></th>
+        <th>Biggest home crowd</th>
+      </tr></thead>
+      <tbody id="d-body"></tbody>
+    </table></div>
+  </section>
+
+  <!-- CHARTS -->
+  <section id="v-charts" data-section="charts" class="charts" hidden>
+    <figure class="chart-card">
+      <figcaption><h2>Home seats filled by day</h2><p class="sub">Share of seats filled across all D1 home games each day. Dashed line: season to date.</p></figcaption>
+      <div class="chart" id="ch-days"></div>
+    </figure>
+    <figure class="chart-card">
+      <figcaption class="sec-head"><div><h2>Arena size vs. seats filled</h2><p class="sub">One dot per team: arena capacity against the share of seats filled at home this season.</p></div>
+        <div class="controls"><label for="ch-conf">Highlight conference<select id="ch-conf" class="conf-select"><option value="">None</option></select></label></div></figcaption>
+      <div class="chart" id="ch-scatter"></div>
+    </figure>
+    <figure class="chart-card">
+      <figcaption><h2>Seats filled by conference</h2><p class="sub">Home attendance divided by seats available. Dashed line: all D1, <span id="ch-conf-ref"></span>.</p></figcaption>
+      <div class="chart" id="ch-confs"></div>
+    </figure>
+    <figure class="chart-card">
+      <figcaption><h2>How big are home crowds?</h2><p class="sub">Number of D1 home games by reported crowd size.</p></figcaption>
+      <div class="chart" id="ch-hist"></div>
+    </figure>
+    <div class="chart-tip" id="chart-tip" hidden></div>
+  </section>
+
+  <!-- EXTREMES -->
+  <section id="v-extremes" data-section="extremes" hidden>
+    <div class="split">
+      <div>
+        <div class="sec-head"><h2>Largest crowds</h2><button type="button" class="png-btn" data-graphic="top" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+        <p class="sub">Single games, any site.</p>
+        <div class="table-box"><table><thead><tr><th>#</th><th>Game</th><th class="n">Crowd</th><th class="n">% of capacity</th></tr></thead><tbody id="x-top"></tbody></table></div>
+      </div>
+      <div>
+        <div class="sec-head"><h2>Smallest home crowds</h2><button type="button" class="png-btn" data-graphic="low" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+        <p class="sub">D1 home games with a reported figure.</p>
+        <div class="table-box"><table><thead><tr><th>#</th><th>Game</th><th class="n">Crowd</th><th class="n">% of capacity</th></tr></thead><tbody id="x-low"></tbody></table></div>
+      </div>
+      <div>
+        <div class="sec-head"><h2>Fullest arenas</h2><button type="button" class="png-btn" data-graphic="full" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+        <p class="sub">D1 home games, crowd as a share of listed capacity.</p>
+        <div class="table-box"><table><thead><tr><th>#</th><th>Game</th><th class="n">Crowd</th><th class="n">% of capacity</th></tr></thead><tbody id="x-full"></tbody></table></div>
+      </div>
+      <div>
+        <div class="sec-head"><h2>Emptiest arenas</h2><button type="button" class="png-btn" data-graphic="empty" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+        <p class="sub">D1 home games, crowd as a share of listed capacity.</p>
+        <div class="table-box"><table><thead><tr><th>#</th><th>Game</th><th class="n">Crowd</th><th class="n">% of capacity</th></tr></thead><tbody id="x-empty"></tbody></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="notes">
+    <div>
+      <h3>How the numbers work</h3>
+      <p>Attendance comes from the box score of each final game. Schools report it, and most report tickets distributed rather than people in the seats, so treat it as the official figure, not a headcount.</p>
+      <p>Rankings and the D1 average count only home games at a team's own venue with a reported figure. Neutral-site events and games against non-D1 opponents still appear in the game list. Games with no figure show as "not reported" and are left out of every average.</p>
+      <p>Capacity is each arena's listed basketball seating, from Wikipedia's list of NCAA Division I basketball arenas, matched to the venue in the box score. Some crowds top 100% because schools sell standing room or report tickets distributed. Venues with no confirmed capacity, mostly neutral-site arenas, show a dash and are left out of % of capacity.</p>
+      <p id="baseline-note">For context, the NCAA's 2024-25 final count put D1 home attendance at 4,373 per game.</p>
+      <p class="dim" id="updated"></p>
+    </div>
+    <aside class="hire">
+      <h3>Built by Matt Den Dulk</h3>
+      <p>Turnstile is a side project of mine that pulls, cleans and publishes college basketball data every morning.</p>
+      <p>I'm a marketing professional, well versed in AI technology. If you're looking for help with marketing, AI projects, AI efficiency or visibility, I'm looking for more work and would love to connect.</p>
+      <p class="contact"><a href="mailto:mattdendulk@gmail.com" id="email">mattdendulk@gmail.com</a> <button type="button" class="copy" id="copy-email">Copy</button></p>
+    </aside>
+  </div>
+</footer>
+
+<div class="modal" id="png-modal" role="dialog" aria-modal="true" aria-labelledby="png-title" hidden>
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="png-title">Infographic</h3><button type="button" class="copy" id="png-close">Close</button></div>
+    <img id="png-img" alt="">
+    <div class="modal-actions"><a class="dl" id="png-dl" href="#">Download PNG</a><span>If the download doesn't start, right-click or long-press the image and save it.</span></div>
+  </div>
+</div>
+
+<script>
+const BASELINE_2425 = 4373;                // NCAA 2024-25 D1 home average, from the NCAA attendance records PDF
+
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => Math.round(n).toLocaleString("en-US");
+const pct = (x) => Math.round(100 * x) + "%";
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const day = (d) => new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+const dow = (d) => new Date(d + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+
+let GAMES = [], HOME = [], D1AVG = 0, CHARTS_READY = false;
+const SCHOOLS = new Set();  // lowercase names of every school in the data
+
+// Picking a school from the list (or typing its full name) matches that school only.
+// A partial entry such as "mich" still matches every school containing it.
+function nameMatcher(raw) {
+  const q = raw.trim().toLowerCase();
+  if (!q) return () => true;
+  if (SCHOOLS.has(q)) return (n) => n.toLowerCase() === q;
+  return (n) => n.toLowerCase().includes(q);
+}
+
+// Copy the email address (falls back to selecting it if the clipboard is blocked)
+$("#copy-email").addEventListener("click", (e) => {
+  const btn = e.currentTarget, addr = $("#email").textContent;
+  const done = () => { btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Copy"), 1600); };
+  const select = () => { const r = document.createRange(); r.selectNodeContents($("#email")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); };
+  navigator.clipboard?.writeText(addr).then(done, select) ?? select();
+});
+
+Promise.all([
+  fetch("data/games.json").then((r) => r.json()),
+  fetch("data/arenas.json").then((r) => r.json()).catch(() => ({})),
+]).then(([data, arenas]) => init(data, arenas)).catch(() => {
+  $("#b-avg-s").textContent = "Couldn't load game data. Refresh to try again.";
+});
+
+// Share of capacity, shown with a small meter. Blank when capacity is unknown.
+function fillCell(g) {
+  if (!g.cap || !g.att) return `<span class="dim">–</span>`;
+  const f = g.att / g.cap, cls = f < 0.25 ? " low" : f >= 1 ? " over" : "";
+  return `<span class="fill${cls}">${pct(f)}<span class="meter" aria-hidden="true"><i style="width:${Math.min(100, 100 * f).toFixed(0)}%"></i></span></span>`;
+}
+
+function init(data, arenas) {
+  GAMES = data.games.map((g) => ({ ...g, cap: arenas[g.venue] || 0 }));
+  GAMES.forEach((g) => (g.fill = g.cap && g.att ? g.att / g.cap : null));
+  // A "home game" for rankings: D1 home team, at its own venue, with a reported figure.
+  HOME = GAMES.filter((g) => !g.neutral && g.home.conf && g.att > 0);
+  D1AVG = HOME.reduce((s, g) => s + g.att, 0) / (HOME.length || 1);
+
+  const reported = GAMES.filter((g) => g.att > 0);
+  const diff = D1AVG - BASELINE_2425;
+  $("#b-avg").textContent = fmt(D1AVG);
+  $("#b-avg-s").innerHTML = `<span class="${diff >= 0 ? "up" : "down"}">${diff >= 0 ? "+" : "−"}${fmt(Math.abs(diff))}</span> vs. 2024-25 (${fmt(BASELINE_2425)})`;
+  $("#b-games").textContent = fmt(GAMES.length);
+  const dates = [...new Set(GAMES.map((g) => g.date))].sort();
+  $("#b-games-s").textContent = `${day(dates[0])} – ${day(dates[dates.length - 1])} · ${Math.round(100 * reported.length / GAMES.length)}% reported`;
+  const withCap = HOME.filter((g) => g.cap);
+  const att = withCap.reduce((s, g) => s + g.att, 0), cap = withCap.reduce((s, g) => s + g.cap, 0);
+  $("#b-fill").textContent = pct(att / cap);
+  $("#b-fill-s").textContent = `${fmt(att)} fans in ${fmt(cap)} seats`;
+  const top = reported.reduce((a, b) => (b.att > a.att ? b : a));
+  $("#b-max").textContent = fmt(top.att);
+  $("#b-max-s").textContent = `${top.away.name} at ${top.home.name}`;
+  if (data.updated) $("#updated").textContent = "Last updated " + new Date(data.updated).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) + ".";
+
+  // Filter options
+  GAMES.forEach((g) => { SCHOOLS.add(g.home.name.toLowerCase()); SCHOOLS.add(g.away.name.toLowerCase()); });
+  const d1 = [...new Set(GAMES.flatMap((g) => [g.home, g.away]).filter((t) => t.conf).map((t) => t.name))].sort();
+  $("#schools").innerHTML = d1.map((n) => `<option value="${esc(n)}"></option>`).join("");
+  $("#g-date").insertAdjacentHTML("beforeend", dates.slice().reverse().map((d) => `<option value="${d}">${dow(d)}</option>`).join(""));
+  const confs = [...new Set(GAMES.flatMap((g) => [g.home.conf, g.away.conf]).filter(Boolean))].sort();
+  document.querySelectorAll(".conf-select").forEach((sel) => sel.insertAdjacentHTML("beforeend", confs.map((c) => `<option>${esc(c)}</option>`).join("")));
+
+  ["#g-date", "#g-conf", "#g-q", "#g-sort", "#g-home", "#g-rep"].forEach((id) => $(id).addEventListener("input", () => { gLimit = 100; renderGames(); }));
+  $("#g-more").addEventListener("click", () => { gLimit += 150; renderGames(); });
+  ["#t-conf", "#t-q", "#t-min"].forEach((id) => $(id).addEventListener("input", renderTeams));
+  document.querySelectorAll("th button[data-sort]").forEach((b) => b.addEventListener("click", () => {
+    const k = b.dataset.sort;
+    tSort = tSort.key === k ? { key: k, dir: -tSort.dir } : { key: k, dir: k === "name" || k === "conf" ? 1 : -1 };
+    renderTeams();
+  }));
+
+  wireSort("data-csort", cSort, renderConfs, ["name"]);
+  wireSort("data-dsort", dSort, renderDays, []);
+  // A date in the By day table opens the Games tab filtered to that day
+  const pickDate = (e) => {
+    const a = e.target.closest("a[data-date]");
+    if (!a) return;
+    $("#g-date").value = a.dataset.date; gLimit = 100; renderGames();
+  };
+  $("#d-body").addEventListener("click", pickDate);
+
+  renderDays(); renderGames(); renderTeams(); renderConfs(); renderExtremes();
+  CHARTS_READY = true;
+  route();
+  renderCharts();
+}
+
+// ---- Games ----
+let gLimit = 100;
+function renderGames() {
+  const d = $("#g-date").value, c = $("#g-conf").value, nm = nameMatcher($("#g-q").value),
+    sort = $("#g-sort").value, home = $("#g-home").checked, rep = $("#g-rep").checked;
+  // With "Home games only" on, a team or conference filter matches the home side only,
+  // so searching a school shows just the games in its own building.
+  const sideMatches = (t) => (!c || t.conf === c) && nm(t.name);
+  let rows = GAMES.filter((g) =>
+    (!d || g.date === d) &&
+    (home ? !g.neutral && sideMatches(g.home) : sideMatches(g.home) || sideMatches(g.away)) &&
+    (!rep || g.att > 0));
+  if (sort === "att") rows.sort((a, b) => b.att - a.att);
+  else if (sort === "attAsc") rows = rows.filter((g) => g.att > 0).sort((a, b) => a.att - b.att);
+  else if (sort === "fill") rows = rows.filter((g) => g.fill !== null).sort((a, b) => b.fill - a.fill);
+  else if (sort === "fillAsc") rows = rows.filter((g) => g.fill !== null).sort((a, b) => a.fill - b.fill);
+  else rows.sort((a, b) => b.date.localeCompare(a.date) || b.att - a.att);
+  $("#g-count").textContent = `${fmt(rows.length)} game${rows.length === 1 ? "" : "s"}`;
+  renderDaily(d);
+  // Home seats filled for whatever is currently filtered (a day, a team, a conference)
+  const hs = rows.filter((g) => !g.neutral && g.home.conf && g.att > 0), hc = hs.filter((g) => g.cap);
+  const hAtt = hc.reduce((a, g) => a + g.att, 0), hCap = hc.reduce((a, g) => a + g.cap, 0);
+  $("#g-summary").innerHTML = hs.length
+    ? `${d ? dow(d) + ": " : "In this view: "}<b>${hs.length}</b> D1 home game${hs.length === 1 ? "" : "s"} · avg. crowd <b>${fmt(hs.reduce((a, g) => a + g.att, 0) / hs.length)}</b>` +
+      (hCap ? ` · home seats filled <b>${pct(hAtt / hCap)}</b> (${fmt(hAtt)} of ${fmt(hCap)})` : "")
+    : "No D1 home games with a reported crowd in this view.";
+  $("#g-body").innerHTML = rows.length ? rows.slice(0, gLimit).map(gameRow).join("") : `<tr><td colspan="7" class="empty">No games match these filters.</td></tr>`;
+  $("#g-more").hidden = rows.length <= gLimit;
+}
+function gameRow(g) {
+  const hw = g.home.score > g.away.score;
+  const tags = (g.neutral ? `<span class="pill neu">Neutral</span>` : "") + (g.confGame ? `<span class="pill">Conf.</span>` : "");
+  const att = g.att > 0 ? `<span class="att">${fmt(g.att)}</span>` : `<span class="na">Not reported</span>`;
+  return `<tr>
+    <td class="dim">${day(g.date)}</td>
+    <td><span class="${hw ? "" : "w"}">${esc(g.away.name)}</span> <span class="dim">at</span> <span class="${hw ? "w" : ""}">${esc(g.home.name)}</span>${tags}</td>
+    <td class="n">${g.away.score}–${g.home.score}</td>
+    <td class="dim" title="${esc(g.event)}">${esc(g.venue)}${g.city ? ", " + esc(g.city) : ""}</td>
+    <td class="n">${att}</td>
+    <td class="n dim"${g.cap ? " data-cap" : ""}>${g.cap ? fmt(g.cap) : "–"}</td>
+    <td class="n">${fillCell(g)}</td></tr>`;
+}
+
+// ---- Teams ----
+let tSort = { key: "avg", dir: -1 };
+function teamStats() {
+  const m = new Map();
+  for (const g of HOME) {
+    const t = m.get(g.home.id) || { name: g.home.name, conf: g.home.conf, atts: [], venues: new Map(), cAtt: 0, cCap: 0 };
+    t.atts.push(g.att);
+    if (g.cap) { t.cAtt += g.att; t.cCap += g.cap; t.venues.set(g.cap, (t.venues.get(g.cap) || 0) + 1); }
+    m.set(g.home.id, t);
+  }
+  return [...m.values()].map((t) => {
+    const total = t.atts.reduce((a, b) => a + b, 0);
+    // Capacity shown is the arena the team used most this season
+    const cap = [...t.venues.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || 0;
+    return { ...t, games: t.atts.length, total, avg: total / t.atts.length, high: Math.max(...t.atts), low: Math.min(...t.atts), cap, fill: t.cCap ? t.cAtt / t.cCap : -1 };
+  });
+}
+function renderTeams() {
+  const c = $("#t-conf").value, nm = nameMatcher($("#t-q").value), min = +$("#t-min").value;
+  const all = teamStats().filter((t) => t.games >= min);
+  const { key, dir } = tSort;
+  all.sort((a, b) => (typeof a[key] === "string" ? a[key].localeCompare(b[key]) : a[key] - b[key]) * dir || b.avg - a.avg);
+  // Rank is always by average, regardless of sort or filters
+  const byAvg = [...all].sort((a, b) => b.avg - a.avg);
+  const rank = new Map(byAvg.map((t, i) => [t.name, i + 1]));
+  const rows = all.filter((t) => (!c || t.conf === c) && nm(t.name));
+  document.querySelectorAll("th button[data-sort]").forEach((b) => b.dataset.sort === key ? b.setAttribute("aria-sort", dir < 0 ? "descending" : "ascending") : b.removeAttribute("aria-sort"));
+  LAST.teams = rows;
+  $("#t-count").textContent = `${rows.length} team${rows.length === 1 ? "" : "s"} ranked of ${all.length}`;
+  $("#t-body").innerHTML = rows.length ? rows.map((t) => `<tr>
+    <td class="rank">${rank.get(t.name)}</td><td class="team">${esc(t.name)}<span class="m-sub">${esc(t.conf)} · ${plural(t.games, "home game")}</span></td><td class="dim">${esc(t.conf)}</td>
+    <td class="n">${t.games}</td><td class="n"><b>${fmt(t.avg)}</b></td><td class="n">${fmt(t.high)}</td><td class="n">${fmt(t.low)}</td>
+    <td class="n dim">${t.cap ? fmt(t.cap) : "–"}</td><td class="n">${t.fill >= 0 ? fillCell({ att: t.cAtt, cap: t.cCap }) : '<span class="dim">–</span>'}</td>
+    <td class="n dim">${fmt(t.total)}</td></tr>`).join("")
+    : `<tr><td colspan="10" class="empty">No teams match. Try lowering the minimum home games.</td></tr>`;
+}
+
+// ---- Shared column sorting (conferences, by day) ----
+function sortRows(rows, { key, dir }) {
+  rows.sort((a, b) => (typeof a[key] === "string" ? a[key].localeCompare(b[key]) : a[key] - b[key]) * dir || b.avg - a.avg);
+}
+function markSort(attr, { key, dir }) {
+  document.querySelectorAll(`th button[${attr}]`).forEach((b) =>
+    b.getAttribute(attr) === key ? b.setAttribute("aria-sort", dir < 0 ? "descending" : "ascending") : b.removeAttribute("aria-sort"));
+}
+function wireSort(attr, state, render, textKeys) {
+  document.querySelectorAll(`th button[${attr}]`).forEach((b) => b.addEventListener("click", () => {
+    const k = b.getAttribute(attr);
+    Object.assign(state, state.key === k ? { dir: -state.dir } : { key: k, dir: textKeys.includes(k) ? 1 : -1 });
+    render();
+  }));
+}
+
+// ---- Day subhead: the date picked in the Games filter, or the latest day ----
+let DAYS = new Map();
+function renderDaily(selected) {
+  const dates = [...DAYS.keys()].filter((k) => DAYS.get(k).n).sort();
+  const date = selected && DAYS.has(selected) ? selected : dates[dates.length - 1];
+  const d = DAYS.get(date);
+  if (!d) return;
+  $("#daily-label").textContent = selected ? "Selected day" : "Most recent day";
+  $("#daily-date").textContent = dow(date);
+  $("#daily-fill").textContent = d.cap ? pct(d.cAtt / d.cap) : "–";
+  $("#daily-avg").textContent = d.n ? fmt(d.avg) : "–";
+  $("#daily-n").textContent = d.n;
+  const big = d.big;
+  $("#daily-max").textContent = big ? fmt(big.att) : "–";
+  $("#daily-max-s").textContent = big ? `${big.away.name} at ${big.home.name}` : "";
+}
+
+// ---- By day ----
+const dSort = { key: "date", dir: -1 };
+function renderDays() {
+  const m = new Map();
+  for (const g of GAMES) {
+    const d = m.get(g.date) || { date: g.date, games: 0, n: 0, att: 0, cap: 0, cAtt: 0, top: null, big: null };
+    d.games++;
+    if (g.att > 0 && (!d.big || g.att > d.big.att)) d.big = g;
+    if (!g.neutral && g.home.conf && g.att > 0) {
+      d.n++; d.att += g.att;
+      if (g.cap) { d.cAtt += g.att; d.cap += g.cap; }
+      if (!d.top || g.att > d.top.att) d.top = g;
+    }
+    m.set(g.date, d);
+  }
+  const rows = [...m.values()].map((d) => ({ ...d, avg: d.n ? d.att / d.n : 0, fill: d.cap ? d.cAtt / d.cap : -1 }));
+  DAYS = new Map(rows.map((d) => [d.date, d]));
+  sortRows(rows, dSort);
+  LAST.days = rows;
+  markSort("data-dsort", dSort);
+  $("#d-body").innerHTML = rows.map((d) => `<tr>
+    <td><a class="date-link" href="#games" data-date="${d.date}">${dow(d.date)}</a><span class="m-sub">${plural(d.n, "home game")}</span></td>
+    <td class="n">${d.games}</td><td class="n">${d.n}</td><td class="n"><b>${d.n ? fmt(d.avg) : "–"}</b></td>
+    <td class="n">${fmt(d.att)}</td><td class="n dim">${d.cap ? fmt(d.cap) : "–"}</td>
+    <td class="n">${d.cap ? fillCell({ att: d.cAtt, cap: d.cap }) : '<span class="dim">–</span>'}</td>
+    <td class="dim">${d.top ? `${esc(d.top.home.name)} <span class="num">${fmt(d.top.att)}</span>` : "–"}</td></tr>`).join("");
+}
+
+// ---- Conferences ----
+const cSort = { key: "avg", dir: -1 };
+function renderConfs() {
+  const m = new Map();
+  for (const g of HOME) {
+    const c = m.get(g.home.conf) || { name: g.home.conf, sum: 0, n: 0, teams: new Set(), cAtt: 0, cCap: 0, high: 0 };
+    c.sum += g.att; c.n++; c.teams.add(g.home.id); c.high = Math.max(c.high, g.att);
+    if (g.cap) { c.cAtt += g.att; c.cCap += g.cap; }
+    m.set(g.home.conf, c);
+  }
+  const rows = [...m.values()].map((c) => ({ ...c, teams: c.teams.size, avg: c.sum / c.n, fill: c.cCap ? c.cAtt / c.cCap : -1 }));
+  sortRows(rows, cSort);
+  LAST.confs = rows;
+  markSort("data-csort", cSort);
+  const max = Math.max(...rows.map((c) => c.avg)), basePct = (100 * D1AVG / max).toFixed(1);
+  $("#c-body").innerHTML = rows.map((c, i) => `<tr>
+    <td class="rank">${i + 1}</td><td class="team">${esc(c.name)}<span class="m-sub">${plural(c.teams, "team")} · ${plural(c.n, "home game")}</span></td><td class="n">${c.teams}</td><td class="n">${c.n}</td><td class="n"><b>${fmt(c.avg)}</b></td>
+    <td class="n">${c.cCap ? fillCell({ att: c.cAtt, cap: c.cCap }) : '<span class="dim">–</span>'}</td>
+    <td class="n">${fmt(c.high)}</td>
+    <td><div class="bar" title="${fmt(c.avg)} per game"><i style="width:${(100 * c.avg / max).toFixed(1)}%"></i><span class="mark" style="left:${basePct}%"></span></div></td></tr>`).join("");
+}
+
+// ---- Extremes ----
+function renderExtremes() {
+  const row = (g, i) => `<tr><td class="rank">${i + 1}</td><td><span class="w">${esc(g.away.name)}</span> <span class="dim">at</span> <span class="w">${esc(g.home.name)}</span>${g.neutral ? '<span class="pill neu">Neutral</span>' : ""}<div class="dim" style="font-size:12px">${day(g.date)} · ${esc(g.venue)}${g.cap ? " · " + fmt(g.cap) + " seats" : ""}</div></td><td class="n"><b>${fmt(g.att)}</b></td><td class="n">${fillCell(g)}</td></tr>`;
+  const capped = HOME.filter((g) => g.fill !== null);
+  LAST.top = GAMES.filter((g) => g.att > 0).sort((a, b) => b.att - a.att);
+  LAST.low = [...HOME].sort((a, b) => a.att - b.att);
+  LAST.full = [...capped].sort((a, b) => b.fill - a.fill);
+  LAST.empty = [...capped].sort((a, b) => a.fill - b.fill);
+  for (const k of ["top", "low", "full", "empty"]) $("#x-" + k).innerHTML = LAST[k].slice(0, 15).map(row).join("");
+}
+
+// ---- Views (hash routing) ----
+const VIEWS = ["games", "teams", "conferences", "days", "charts", "extremes"];
+function route() {
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "games";
+  document.querySelectorAll("[data-section]").forEach((s) => (s.hidden = s.dataset.section !== v));
+  document.querySelectorAll("nav.tabs a").forEach((a) => a.dataset.view === v ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  const nav = $("nav.tabs"), cur = nav.querySelector("[aria-current]");
+  if (cur && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = cur.offsetLeft - 16;
+}
+window.addEventListener("hashchange", route);
+
+// ---- Charts tab (hand-drawn SVG, redrawn to fit its container) ----
+const ticks = (max, step) => Array.from({ length: Math.floor(max / step) + 1 }, (_, i) => i * step);
+const kfmt = (v) => v >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0).replace(/\.0$/, "") + "K" : String(v);
+const seasonFill = () => { const c = HOME.filter((g) => g.cap); return c.reduce((a, g) => a + g.att, 0) / c.reduce((a, g) => a + g.cap, 0); };
+const svgOpen = (W, H, label) => `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(label)}">`;
+
+function chartDays(el) {
+  const rows = [...DAYS.values()].filter((d) => d.cap).sort((a, b) => a.date.localeCompare(b.date));
+  const W = el.clientWidth, H = 280, m = { l: 44, r: 20, t: 20, b: 34 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const ymax = Math.max(100, Math.ceil(Math.max(...rows.map((d) => d.fill * 100)) / 25) * 25);
+  const x = (i) => m.l + (rows.length < 2 ? iw / 2 : (i * iw) / (rows.length - 1)), y = (v) => m.t + ih - (v / ymax) * ih;
+  const every = Math.max(1, Math.ceil((rows.length * 64) / iw)), sf = seasonFill() * 100;
+  const pts = rows.map((d, i) => [x(i), y(d.fill * 100)]);
+  let s = svgOpen(W, H, "Line chart of home seats filled by day");
+  s += ticks(ymax, 25).map((t) => `<line class="c-grid" x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}"/><text x="${m.l - 8}" y="${y(t) + 4}" text-anchor="end">${t}%</text>`).join("");
+  s += rows.map((d, i) => i % every ? "" : `<text x="${x(i)}" y="${H - 10}" text-anchor="middle">${day(d.date)}</text>`).join("");
+  s += `<line class="c-ref" x1="${m.l}" x2="${W - m.r}" y1="${y(sf)}" y2="${y(sf)}"/><text class="c-reflabel" x="${W - m.r}" y="${y(sf) - 6}" text-anchor="end">Season ${pct(sf / 100)}</text>`;
+  s += `<path class="c-area" d="M${pts.map((p) => p.join(",")).join("L")}L${pts[pts.length - 1][0]},${y(0)}L${pts[0][0]},${y(0)}Z"/>`;
+  s += `<path class="c-line" d="M${pts.map((p) => p.join(",")).join("L")}"/>`;
+  s += `<line class="c-cross" id="cross" x1="0" x2="0" y1="${m.t}" y2="${y(0)}" hidden/>`;
+  s += pts.map((p) => `<circle class="c-dot" cx="${p[0]}" cy="${p[1]}" r="4.5"/>`).join("");
+  const half = rows.length < 2 ? iw / 2 : iw / (rows.length - 1) / 2;
+  s += rows.map((d, i) => `<rect class="c-hit" x="${x(i) - half}" y="${m.t}" width="${half * 2}" height="${ih}" data-x="${x(i)}"
+    data-tip="<b>${dow(d.date)}</b><br>${pct(d.fill)} of seats filled<br>${d.n} home games · avg. ${fmt(d.avg)}"/>`).join("");
+  el.innerHTML = s + "</svg>";
+}
+
+function chartScatter(el) {
+  const hl = $("#ch-conf").value;
+  const rows = teamStats().filter((t) => t.cap && t.fill >= 0);
+  const W = el.clientWidth, H = Math.max(300, Math.min(420, W * 0.5)), m = { l: 44, r: 20, t: 20, b: 40 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const lo = Math.log10(800), hi = Math.log10(40000);
+  const x = (v) => m.l + ((Math.log10(v) - lo) / (hi - lo)) * iw;
+  const ymax = Math.max(100, Math.ceil(Math.max(...rows.map((t) => t.fill * 100)) / 25) * 25), y = (v) => m.t + ih - (v / ymax) * ih;
+  let s = svgOpen(W, H, "Scatter plot of arena capacity against percent of capacity filled, one dot per team");
+  s += ticks(ymax, 25).map((t) => `<line class="c-grid" x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}"/><text x="${m.l - 8}" y="${y(t) + 4}" text-anchor="end">${t}%</text>`).join("");
+  s += [1000, 2500, 5000, 10000, 20000].map((v) => `<line class="c-grid" x1="${x(v)}" x2="${x(v)}" y1="${m.t}" y2="${y(0)}"/><text x="${x(v)}" y="${H - 18}" text-anchor="middle">${kfmt(v)}</text>`).join("");
+  s += `<text x="${m.l + iw / 2}" y="${H - 2}" text-anchor="middle">Arena capacity (log scale)</text>`;
+  s += `<line class="c-ref" x1="${m.l}" x2="${W - m.r}" y1="${y(100)}" y2="${y(100)}"/><text class="c-reflabel" x="${W - m.r}" y="${y(100) - 6}" text-anchor="end">Sold out</text>`;
+  const order = [...rows].sort((a, b) => (a.conf === hl) - (b.conf === hl));
+  s += order.map((t) => `<circle class="c-dot${hl ? (t.conf === hl ? " c-hl" : " c-dim") : ""}" cx="${x(t.cap)}" cy="${y(t.fill * 100)}" r="4.5"/>`).join("");
+  s += order.map((t) => `<circle class="c-hit" cx="${x(t.cap)}" cy="${y(t.fill * 100)}" r="9"
+    data-tip="<b>${esc(t.name)}</b> · ${esc(t.conf)}<br>${pct(t.fill)} of ${fmt(t.cap)} seats<br>avg. ${fmt(t.avg)} · ${plural(t.games, "home game")}"/>`).join("");
+  el.innerHTML = s + "</svg>";
+}
+
+function chartConfs(el) {
+  const m0 = new Map();
+  for (const g of HOME.filter((g) => g.cap)) {
+    const c = m0.get(g.home.conf) || { name: g.home.conf, att: 0, cap: 0, n: 0 };
+    c.att += g.att; c.cap += g.cap; c.n++; m0.set(g.home.conf, c);
+  }
+  const rows = [...m0.values()].map((c) => ({ ...c, fill: c.att / c.cap, avg: c.att / c.n })).sort((a, b) => b.fill - a.fill);
+  const W = el.clientWidth, bh = 14, rh = 24, m = { l: 112, r: 48, t: 28, b: 8 }, H = m.t + rows.length * rh + m.b, iw = W - m.l - m.r;
+  const xmax = Math.max(100, Math.ceil(Math.max(...rows.map((c) => c.fill * 100)) / 25) * 25), x = (v) => m.l + (v / xmax) * iw;
+  const sf = seasonFill() * 100;
+  let s = svgOpen(W, H, "Bar chart of percent of capacity filled by conference");
+  s += ticks(xmax, 25).map((t) => `<line class="c-grid" x1="${x(t)}" x2="${x(t)}" y1="${m.t - 6}" y2="${H - m.b}"/><text x="${x(t)}" y="${m.t - 12}" text-anchor="middle">${t}%</text>`).join("");
+  s += rows.map((c, i) => {
+    const yy = m.t + i * rh + (rh - bh) / 2, w = Math.max(2, x(c.fill * 100) - m.l);
+    return `<text class="c-cat" x="${m.l - 10}" y="${yy + bh - 3}" text-anchor="end">${esc(c.name)}</text>
+      <rect class="c-bar" x="${m.l}" y="${yy}" width="${w}" height="${bh}" rx="2"/>
+      <text x="${m.l + w + 6}" y="${yy + bh - 3}">${pct(c.fill)}</text>
+      <rect class="c-hit" x="0" y="${m.t + i * rh}" width="${W}" height="${rh}" data-tip="<b>${esc(c.name)}</b><br>${pct(c.fill)} of seats filled<br>avg. ${fmt(c.avg)} · ${plural(c.n, "home game")}"/>`;
+  }).join("");
+  s += `<line class="c-ref" x1="${x(sf)}" x2="${x(sf)}" y1="${m.t - 6}" y2="${H - m.b}"/>`;
+  el.innerHTML = s + "</svg>";
+  $("#ch-conf-ref").textContent = pct(sf / 100);
+}
+
+function chartHist(el) {
+  const B = [[0, 500, "Under 500"], [500, 1000, "500–1K"], [1000, 2500, "1K–2.5K"], [2500, 5000, "2.5K–5K"], [5000, 10000, "5K–10K"], [10000, 15000, "10K–15K"], [15000, Infinity, "15K+"]];
+  const rows = B.map(([a, b, label]) => ({ label, n: HOME.filter((g) => g.att >= a && g.att < b).length }));
+  const total = HOME.length;
+  const W = el.clientWidth, H = 260, m = { l: 44, r: 12, t: 20, b: 34 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
+  const step = Math.ceil(Math.max(...rows.map((r) => r.n)) / 4 / 25) * 25 || 25, ymax = step * 4;
+  const bw = iw / rows.length, y = (v) => m.t + ih - (v / ymax) * ih;
+  let s = svgOpen(W, H, "Bar chart of how many home games drew each crowd size");
+  s += ticks(ymax, step).map((t) => `<line class="c-grid" x1="${m.l}" x2="${W - m.r}" y1="${y(t)}" y2="${y(t)}"/><text x="${m.l - 8}" y="${y(t) + 4}" text-anchor="end">${t}</text>`).join("");
+  s += rows.map((r, i) => {
+    const bx = m.l + i * bw + 3, w = bw - 6;
+    return `<rect class="c-bar" x="${bx}" y="${y(r.n)}" width="${w}" height="${Math.max(0, y(0) - y(r.n))}" rx="2"/>
+      <text x="${bx + w / 2}" y="${H - 10}" text-anchor="middle">${W < 520 && i % 2 ? "" : r.label}</text>
+      <rect class="c-hit" x="${bx - 3}" y="${m.t}" width="${bw}" height="${ih}" data-tip="<b>${r.label} fans</b><br>${plural(r.n, "home game")} · ${pct(r.n / total)} of all"/>`;
+  }).join("");
+  el.innerHTML = s + "</svg>";
+}
+
+function renderCharts() {
+  if (!CHARTS_READY || $("#v-charts").hidden) return;
+  chartDays($("#ch-days")); chartScatter($("#ch-scatter")); chartConfs($("#ch-confs")); chartHist($("#ch-hist"));
+}
+// Shared hover tooltip for every chart
+document.addEventListener("pointermove", (e) => {
+  const tip = $("#chart-tip"), hit = e.target.closest?.("#v-charts [data-tip]");
+  const cross = $("#cross");
+  if (!hit) { tip.hidden = true; if (cross) cross.setAttribute("hidden", ""); return; }
+  tip.innerHTML = hit.dataset.tip; tip.hidden = false;
+  const box = $("#v-charts").getBoundingClientRect(), tw = tip.offsetWidth;
+  tip.style.left = Math.min(box.width - tw - 4, Math.max(4, e.clientX - box.left + 14)) + "px";
+  tip.style.top = (e.clientY - box.top + 16) + "px";
+  if (cross) { if (hit.dataset.x) { cross.setAttribute("x1", hit.dataset.x); cross.setAttribute("x2", hit.dataset.x); cross.removeAttribute("hidden"); } else cross.setAttribute("hidden", ""); }
+});
+let chartTimer;
+new ResizeObserver(() => { clearTimeout(chartTimer); chartTimer = setTimeout(renderCharts, 80); }).observe($("#v-charts"));
+$("#ch-conf").addEventListener("input", () => chartScatter($("#ch-scatter")));
+window.addEventListener("hashchange", renderCharts);
+
+// ---- Court drawing (shared by the header background and the PNG infographics) ----
+// NCAA court, 94 x 50 ft at 10 units per foot
+const COURT = [
+  "M0 0H940V500H0Z", "M470 0V500", "M530 250A60 60 0 1 1 410 250A60 60 0 1 1 530 250",
+  "M0 190H190V310H0", "M190 190A60 60 0 0 1 190 310", "M0 33.5H99A221.5 221.5 0 0 1 99 466.5H0",
+  "M40 220V280", "M61.5 250A9 9 0 1 1 43.5 250A9 9 0 1 1 61.5 250",
+  "M940 190H750V310H940", "M750 190A60 60 0 0 0 750 310", "M940 33.5H841A221.5 221.5 0 0 0 841 466.5H940",
+  "M900 220V280", "M878.5 250A9 9 0 1 0 896.5 250A9 9 0 1 0 878.5 250",
+];
+$("#court").innerHTML = COURT.map((d) => `<path d="${d}"/>`).join("");
+
+// ---- PNG infographics ----
+const LAST = {};
+const DATES = () => [...new Set(GAMES.map((g) => g.date))].sort();
+const rangeText = () => { const d = DATES(); return `${day(d[0])} – ${day(d[d.length - 1])}, ${d[d.length - 1].slice(0, 4)}`; };
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+
+function summarySpec() {
+  const t = (id) => $(id).textContent.trim();
+  return {
+    name: "season-snapshot", title: "Season snapshot",
+    subtitle: `NCAA Division I men's basketball · ${rangeText()}`,
+    tiles: [
+      { label: "D1 home average", value: t("#b-avg"), sub: t("#b-avg-s") },
+      { label: "Home seats filled", value: t("#b-fill"), sub: t("#b-fill-s") },
+      { label: "Biggest crowd", value: t("#b-max"), sub: t("#b-max-s") },
+      { label: "Games tracked", value: t("#b-games"), sub: t("#b-games-s") },
+    ],
+    dayLabel: `${t("#daily-label")} · ${t("#daily-date")}`,
+    dayTiles: [
+      { label: "Home seats filled", value: t("#daily-fill") },
+      { label: "Avg. home crowd", value: t("#daily-avg") },
+      { label: "Largest crowd", value: t("#daily-max"), sub: t("#daily-max-s") },
+      { label: "D1 home games", value: t("#daily-n") },
+    ],
+    rows: [],
+  };
+}
+function teamSpec() {
+  let { key, dir } = tSort;
+  let rows = LAST.teams || [];
+  if (key === "name" || key === "conf") { key = "avg"; dir = -1; rows = [...rows].sort((a, b) => b.avg - a.avg); }
+  if (key === "fill") rows = rows.filter((t) => t.fill >= 0);
+  if (key === "cap") rows = rows.filter((t) => t.cap);
+  const T = { avg: ["Highest average home crowd", "Lowest average home crowd"], fill: ["Fullest home arenas", "Emptiest home arenas"],
+    high: ["Biggest home crowds", "Smallest season-high crowds"], low: ["Highest low crowd", "Smallest home crowds"],
+    total: ["Most total home attendance", "Least total home attendance"], games: ["Most home games", "Fewest home games"],
+    cap: ["Biggest home arenas", "Smallest home arenas"] };
+  const val = (t) => key === "fill" ? Math.min(t.fill, 9) : t[key];
+  const show = (t) => key === "fill" ? pct(t.fill) : key === "games" ? String(t.games) : fmt(t[key]);
+  const conf = $("#t-conf").value;
+  return {
+    name: "teams-" + key, title: (conf ? conf + ": " : "") + T[key][dir < 0 ? 0 : 1],
+    subtitle: [conf || "NCAA Division I men's basketball", `min. ${plural(+$("#t-min").value, "home game")}`, rangeText()].join(" · "),
+    rows: rows.slice(0, 10).map((t) => ({ label: t.name, value: val(t), display: show(t),
+      sub: `${t.conf} · ${plural(t.games, "home game")}` + (key === "avg" ? (t.fill >= 0 ? ` · ${pct(t.fill)} of capacity` : "") : ` · avg. ${fmt(t.avg)}`) })),
+  };
+}
+function confSpec() {
+  let { key, dir } = cSort;
+  let rows = LAST.confs || [];
+  if (key === "name") { key = "avg"; dir = -1; rows = [...rows].sort((a, b) => b.avg - a.avg); }
+  if (key === "fill") rows = rows.filter((c) => c.fill >= 0);
+  const T = { avg: "Conference home averages", fill: "Conference seats filled", high: "Biggest crowd by conference", n: "Home games by conference", teams: "Teams by conference" };
+  const show = (c) => key === "fill" ? pct(c.fill) : fmt(c[key]);
+  return {
+    name: "conferences-" + key, title: T[key] + (dir > 0 ? ", lowest first" : ""),
+    subtitle: ["D1 home games, neutral sites excluded", key === "fill" ? "attendance ÷ seats available" : "", rangeText()].filter(Boolean).join(" · "),
+    rows: rows.map((c) => ({ label: c.name, value: c[key], display: show(c),
+      sub: `${plural(c.teams, "team")} · ${plural(c.n, "home game")}` + (key === "avg" && c.fill >= 0 ? ` · ${pct(c.fill)} of capacity` : ` · avg. ${fmt(c.avg)}`) })),
+  };
+}
+function daySpec() {
+  let { key, dir } = dSort;
+  const metric = key === "date" ? "fill" : key;
+  let rows = (LAST.days || []).filter((d) => d.n);
+  if (metric === "fill") rows = rows.filter((d) => d.fill >= 0);
+  const T = { fill: "Home seats filled by day", avg: "Average home crowd by day", att: "Home attendance by day", n: "D1 home games by day", games: "Games by day", cap: "Seats available by day" };
+  const show = (d) => metric === "fill" ? pct(d.fill) : fmt(d[metric]);
+  return {
+    name: "by-day-" + metric, title: T[metric] + (key !== "date" && dir > 0 ? ", lowest first" : ""),
+    subtitle: ["NCAA Division I men's basketball home games", metric === "fill" ? "attendance ÷ seats available" : "", rangeText()].filter(Boolean).join(" · "),
+    rows: rows.slice(0, 14).map((d) => ({ label: dow(d.date), value: d[metric], display: show(d),
+      sub: `${plural(d.n, "home game")} · avg. ${fmt(d.avg)}` + (metric !== "fill" && d.fill >= 0 ? ` · ${pct(d.fill)} full` : "") })),
+  };
+}
+function extremeSpec(kind) {
+  const C = {
+    top: ["Largest crowds", "Single games, any site", (g) => g.att, (g) => fmt(g.att)],
+    low: ["Smallest home crowds", "D1 home games with a reported crowd", (g) => g.att, (g) => fmt(g.att)],
+    full: ["Fullest arenas", "D1 home games · crowd ÷ arena capacity", (g) => Math.min(g.fill, 9), (g) => pct(g.fill)],
+    empty: ["Emptiest arenas", "D1 home games · crowd ÷ arena capacity", (g) => g.fill, (g) => pct(g.fill)],
+  }[kind];
+  const isFill = kind === "full" || kind === "empty";
+  return {
+    name: kind === "top" ? "largest-crowds" : kind === "low" ? "smallest-crowds" : kind + "est-arenas",
+    title: C[0], subtitle: `${C[1]} · ${rangeText()}`,
+    rows: (LAST[kind] || []).slice(0, 10).map((g) => ({ label: `${g.away.name} at ${g.home.name}`, value: C[2](g), display: C[3](g),
+      sub: `${day(g.date)} · ${g.venue}` + (isFill ? ` · ${fmt(g.att)} of ${fmt(g.cap)}` : g.fill !== null ? ` · ${pct(g.fill)} full` : "") })),
+  };
+}
+
+const INK = { bg: "#12202f", line: "rgba(255,255,255,0.07)", text: "#f2f5f8", muted: "#9aabbd", accent: "#f07a42", track: "rgba(255,255,255,0.06)", barFill: "rgba(240,122,66,0.3)" };
+const F = { display: '"Big Shoulders Display", "Arial Narrow", Impact, sans-serif', body: '"Public Sans", system-ui, sans-serif', mono: '"IBM Plex Mono", ui-monospace, monospace' };
+
+function fit(ctx, text, max) {
+  if (ctx.measureText(text).width <= max) return text;
+  while (text.length > 1 && ctx.measureText(text + "…").width > max) text = text.slice(0, -1);
+  return text.trimEnd() + "…";
+}
+function wrapLines(ctx, text, max, maxLines) {
+  const words = text.split(" "), lines = [];
+  let line = "";
+  for (const w of words) {
+    const t = line ? line + " " + w : w;
+    if (ctx.measureText(t).width > max && line) { lines.push(line); line = w; } else line = t;
+  }
+  lines.push(line);
+  if (lines.length > maxLines) { lines.length = maxLines; lines[maxLines - 1] = fit(ctx, lines[maxLines - 1] + "…", max); }
+  return lines;
+}
+
+async function drawGraphic(spec) {
+  await Promise.all(["800 80px", "600 20px"].map((w) => document.fonts.load(`${w} "Big Shoulders Display"`))
+    .concat(["400 20px", "600 20px"].map((w) => document.fonts.load(`${w} "Public Sans"`)), document.fonts.load('500 20px "IBM Plex Mono"'))).catch(() => {});
+  const W = 1080, H = 1350, P = 72;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+  const spacing = (px) => { if ("letterSpacing" in ctx) ctx.letterSpacing = px + "px"; };
+  ctx.fillStyle = INK.bg; ctx.fillRect(0, 0, W, H);
+
+  // Court lines across the top, fading out
+  const s = W / 940;
+  ctx.save(); ctx.scale(s, s); ctx.strokeStyle = INK.line; ctx.lineWidth = 3 / s;
+  COURT.forEach((d) => ctx.stroke(new Path2D(d))); ctx.restore();
+  const fade = ctx.createLinearGradient(0, 220, 0, 500 * s);
+  fade.addColorStop(0, "rgba(18,32,47,0)"); fade.addColorStop(1, INK.bg);
+  ctx.fillStyle = fade; ctx.fillRect(0, 220, W, 500 * s - 219);
+
+  // Wordmark and kicker
+  ctx.textBaseline = "alphabetic";
+  ctx.font = `800 54px ${F.display}`; spacing(1);
+  ctx.fillStyle = INK.text; ctx.fillText("TURN", P, 116);
+  ctx.fillStyle = INK.accent; ctx.fillText("STILE", P + ctx.measureText("TURN").width, 116);
+  ctx.font = `600 18px ${F.body}`; spacing(2.5); ctx.fillStyle = INK.muted; ctx.textAlign = "right";
+  ctx.fillText("COLLEGE BASKETBALL ATTENDANCE", W - P, 112); ctx.textAlign = "left";
+
+  // Title and subtitle
+  ctx.font = `800 84px ${F.display}`; spacing(0.5); ctx.fillStyle = INK.text;
+  let y = 236;
+  const tl = wrapLines(ctx, spec.title.toUpperCase(), W - 2 * P, 2);
+  tl.forEach((l) => { ctx.fillText(l, P, y); y += 82; });
+  ctx.font = `400 26px ${F.body}`; spacing(0); ctx.fillStyle = INK.muted;
+  const sl = wrapLines(ctx, spec.subtitle, W - 2 * P, 2);
+  y += 2; sl.forEach((l) => { ctx.fillText(l, P, y); y += 36; });
+
+  if (spec.tiles) { drawTiles(ctx, spec, y + 30, W, P, spacing); drawFooter(ctx, W, H, P); return cv; }
+
+  // Rows (long lists such as all 32 conferences split into two columns)
+  const top = y + 30, bottom = H - 150, n = Math.max(1, spec.rows.length);
+  const cols = n > 16 ? 2 : 1, perCol = Math.ceil(n / cols), gap = 28;
+  const colW = (W - 2 * P - (cols - 1) * gap) / cols;
+  const rowH = Math.min(84, (bottom - top) / perCol), roomy = rowH >= 62;
+  const max = Math.max(...spec.rows.map((r) => r.value), 0) || 1;
+  spec.rows.forEach((r, i) => {
+    const c = Math.floor(i / perCol), x0 = P + c * (colW + gap);
+    const xLabel = x0 + (cols > 1 ? 48 : 64), xRight = x0 + colW;
+    const ry = top + (i % perCol) * rowH, mid = ry + rowH / 2, barW = xRight - xLabel + 14;
+    ctx.fillStyle = INK.track; ctx.fillRect(xLabel - 14, ry + 3, barW, rowH - 6);
+    ctx.fillStyle = INK.barFill; ctx.fillRect(xLabel - 14, ry + 3, Math.max(4, barW * Math.max(0, r.value) / max), rowH - 6);
+    if (i === 0) { ctx.fillStyle = INK.accent; ctx.fillRect(xLabel - 14, ry + 3, 4, rowH - 6); }
+    ctx.textBaseline = "middle";
+    ctx.font = `500 ${Math.round(Math.min(26, rowH * 0.42))}px ${F.mono}`; ctx.fillStyle = INK.muted;
+    ctx.fillText(String(i + 1), x0, mid + 1);
+    ctx.font = `800 ${Math.round(Math.min(46, rowH * 0.62))}px ${F.display}`; ctx.fillStyle = INK.text; ctx.textAlign = "right";
+    ctx.fillText(r.display, xRight - 14, mid + 2); const vw = ctx.measureText(r.display).width; ctx.textAlign = "left";
+    const lw = xRight - 14 - vw - 24 - xLabel;
+    ctx.font = `600 ${Math.round(Math.min(30, rowH * 0.46))}px ${F.body}`; ctx.fillStyle = INK.text;
+    if (roomy) {
+      ctx.fillText(fit(ctx, r.label, lw), xLabel, mid - 12);
+      ctx.font = `400 19px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText(fit(ctx, r.sub, lw), xLabel, mid + 20);
+    } else ctx.fillText(fit(ctx, r.label, lw), xLabel, mid + 1);
+    ctx.textBaseline = "alphabetic";
+  });
+
+  drawFooter(ctx, W, H, P);
+  return cv;
+}
+function drawFooter(ctx, W, H, P) {
+  ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.fillRect(P, H - 118, W - 2 * P, 1);
+  ctx.font = `600 22px ${F.body}`; ctx.fillStyle = INK.text; ctx.fillText("Turnstile by Matt Den Dulk", P, H - 76);
+  ctx.textAlign = "right"; ctx.font = `400 22px ${F.body}`; ctx.fillText("mattdendulk@gmail.com", W - P, H - 76); ctx.textAlign = "left";
+  ctx.font = `400 18px ${F.body}`; ctx.fillStyle = INK.muted;
+  ctx.fillText("Attendance from ESPN box scores · Arena capacity from Wikipedia · Rankings use home games only", P, H - 44);
+}
+function drawTiles(ctx, spec, y, W, P, spacing) {
+  const gap = 16, colW = (W - 2 * P - gap) / 2;
+  const label = (text, x, yy) => { ctx.font = `600 18px ${F.body}`; spacing(2.5); ctx.fillStyle = INK.muted; ctx.fillText(text.toUpperCase(), x, yy); spacing(0); };
+  const tile = (tl, x, yy, w, h, big) => {
+    ctx.fillStyle = INK.track; ctx.fillRect(x, yy, w, h);
+    label(tl.label, x + 24, yy + 42);
+    const base = yy + 44 + big * 0.92;
+    ctx.font = `800 ${big}px ${F.display}`; ctx.fillStyle = INK.text; ctx.fillText(fit(ctx, tl.value, w - 48), x + 24, base);
+    if (tl.sub) { ctx.font = `400 20px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText(fit(ctx, tl.sub, w - 48), x + 24, base + 36); }
+  };
+  label("Season to date", P, y);
+  ctx.fillStyle = INK.accent; ctx.fillRect(P, y + 14, 48, 3);
+  y += 36;
+  spec.tiles.forEach((tl, i) => tile(tl, P + (i % 2) * (colW + gap), y + Math.floor(i / 2) * (176 + gap), colW, 176, 84));
+  y += 2 * 176 + gap + 52;
+  label(spec.dayLabel, P, y);
+  ctx.fillStyle = INK.accent; ctx.fillRect(P, y + 14, 48, 3);
+  y += 36;
+  spec.dayTiles.forEach((tl, i) => tile(tl, P + (i % 2) * (colW + gap), y + Math.floor(i / 2) * (152 + gap), colW, 152, 64));
+}
+
+let pngURL = null, lastFocus = null;
+async function openGraphic(kind) {
+  const spec = { summary: summarySpec, teams: teamSpec, confs: confSpec, days: daySpec }[kind]?.() || extremeSpec(kind);
+  if (!spec.rows.length && !spec.tiles) return;
+  const cv = await drawGraphic(spec);
+  const blob = await new Promise((r) => cv.toBlob(r, "image/png"));
+  if (pngURL) URL.revokeObjectURL(pngURL);
+  pngURL = URL.createObjectURL(blob);
+  const file = `turnstile-${spec.name}-${DATES().slice(-1)[0]}.png`;
+  $("#png-img").src = pngURL; $("#png-img").alt = spec.title;
+  $("#png-dl").href = pngURL; $("#png-dl").download = file;
+  $("#png-title").textContent = spec.title;
+  lastFocus = document.activeElement;
+  $("#png-modal").hidden = false; $("#png-dl").focus();
+}
+function closeGraphic() { $("#png-modal").hidden = true; lastFocus?.focus(); }
+document.addEventListener("click", (e) => { const b = e.target.closest(".png-btn"); if (b && GAMES.length) openGraphic(b.dataset.graphic); });
+$("#png-close").addEventListener("click", closeGraphic);
+$("#png-modal").addEventListener("click", (e) => { if (e.target.id === "png-modal") closeGraphic(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#png-modal").hidden) closeGraphic(); });
+</script>
+</body>
+</html>
