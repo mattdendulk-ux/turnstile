@@ -1,0 +1,11 @@
+# Netlify settings for Turnstile. The site is plain HTML, so there is no build step:
+# Netlify publishes the repository as-is and redeploys on every push to main,
+# including the daily data commit from GitHub Actions.
+[build]
+  publish = "."
+
+# Always serve the newest attendance data instead of a cached copy
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
