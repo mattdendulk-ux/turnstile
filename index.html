@@ -97,7 +97,8 @@ h1 span { color: var(--accent); }
 @media (max-width: 720px) { .board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 .daily { margin-top: 18px; padding-block: 12px 14px; border-bottom: 1px solid var(--rule); }
-.daily-head { font: 600 11px/1.2 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.daily-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; font: 600 11px/1.2 var(--font-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.daily-head .png-btn { letter-spacing: normal; text-transform: none; font-size: 12px; padding: 5px 9px; }
 .daily-head #daily-date { color: var(--accent); }
 .daily-stats { display: flex; flex-wrap: wrap; gap: 8px 32px; margin-top: 8px; }
 .daily-stats > div { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
@@ -263,7 +264,7 @@ h2 { font: 800 26px/1.1 var(--font-display); text-transform: uppercase; letter-s
       <div><div class="k">Biggest crowd</div><div class="v num" id="b-max">–</div><div class="s" id="b-max-s"></div></div>
     </div>
     <div class="daily" id="daily" aria-live="polite">
-      <div class="daily-head"><span id="daily-label">Most recent day</span> · <span id="daily-date"></span></div>
+      <div class="daily-head"><span><span id="daily-label">Most recent day</span> · <span id="daily-date"></span></span><button type="button" class="png-btn" data-graphic="day" title="Download this day's numbers as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save day as image</button></div>
       <div class="daily-stats">
         <div><span class="dk">Home seats filled</span><span class="dv num" id="daily-fill">–</span></div>
         <div><span class="dk">Avg. home crowd</span><span class="dv num" id="daily-avg">–</span></div>
@@ -630,10 +631,11 @@ function wireSort(attr, state, render, textKeys) {
 }
 
 // ---- Day subhead: the date picked in the Games filter, or the latest day ----
-let DAYS = new Map();
+let DAYS = new Map(), DAILY_DATE = "";
 function renderDaily(selected) {
   const dates = [...DAYS.keys()].filter((k) => DAYS.get(k).n).sort();
   const date = selected && DAYS.has(selected) ? selected : dates[dates.length - 1];
+  DAILY_DATE = date;
   const d = DAYS.get(date);
   if (!d) return;
   $("#daily-label").textContent = selected ? "Selected day" : "Most recent day";
@@ -843,6 +845,24 @@ const DATES = () => [...new Set(GAMES.map((g) => g.date))].sort();
 const rangeText = () => { const d = DATES(); return `${day(d[0])} – ${day(d[d.length - 1])}, ${d[d.length - 1].slice(0, 4)}`; };
 const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
+function dayOnlySpec() {
+  const t = (id) => $(id).textContent.trim(), d = DAILY_DATE;
+  const top = GAMES.filter((g) => g.date === d && g.att > 0).sort((a, b) => b.att - a.att).slice(0, 5);
+  return {
+    name: "day", title: new Date(d + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
+    subtitle: "NCAA Division I men's basketball · one day of crowds",
+    tilesLabel: "D1 home games",
+    tiles: [
+      { label: "Home seats filled", value: t("#daily-fill") },
+      { label: "Avg. home crowd", value: t("#daily-avg") },
+      { label: "Largest crowd", value: t("#daily-max"), sub: t("#daily-max-s") },
+      { label: "D1 home games", value: t("#daily-n") },
+    ],
+    rowsLabel: "Biggest crowds of the day",
+    rows: top.map((g) => ({ label: `${g.away.name} at ${g.home.name}`, value: g.att, display: fmt(g.att),
+      sub: g.venue + (g.fill !== null ? ` · ${pct(g.fill)} full` : "") })),
+  };
+}
 function summarySpec() {
   const t = (id) => $(id).textContent.trim();
   return {
@@ -982,7 +1002,12 @@ async function drawGraphic(spec) {
   const sl = wrapLines(ctx, spec.subtitle, W - 2 * P, 2);
   y += 2; sl.forEach((l) => { ctx.fillText(l, P, y); y += 36; });
 
-  if (spec.tiles) { drawTiles(ctx, spec, y + 30, W, P, spacing); drawFooter(ctx, W, H, P); return cv; }
+  if (spec.tiles) {
+    y = drawTiles(ctx, spec, y + 30, W, P, spacing);
+    if (!spec.rows.length) { drawFooter(ctx, W, H, P); return cv; }
+    ctx.font = `600 18px ${F.body}`; spacing(2.5); ctx.fillStyle = INK.muted; ctx.fillText(spec.rowsLabel.toUpperCase(), P, y); spacing(0);
+    ctx.fillStyle = INK.accent; ctx.fillRect(P, y + 14, 48, 3);
+  }
 
   // Rows (long lists such as all 32 conferences split into two columns)
   const top = y + 30, bottom = H - 150, n = Math.max(1, spec.rows.length);
@@ -1031,26 +1056,28 @@ function drawTiles(ctx, spec, y, W, P, spacing) {
     ctx.font = `800 ${big}px ${F.display}`; ctx.fillStyle = INK.text; ctx.fillText(fit(ctx, tl.value, w - 48), x + 24, base);
     if (tl.sub) { ctx.font = `400 20px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText(fit(ctx, tl.sub, w - 48), x + 24, base + 36); }
   };
-  label("Season to date", P, y);
+  label(spec.tilesLabel || "Season to date", P, y);
   ctx.fillStyle = INK.accent; ctx.fillRect(P, y + 14, 48, 3);
   y += 36;
   spec.tiles.forEach((tl, i) => tile(tl, P + (i % 2) * (colW + gap), y + Math.floor(i / 2) * (176 + gap), colW, 176, 84));
   y += 2 * 176 + gap + 52;
+  if (!spec.dayTiles) return y;
   label(spec.dayLabel, P, y);
   ctx.fillStyle = INK.accent; ctx.fillRect(P, y + 14, 48, 3);
   y += 36;
   spec.dayTiles.forEach((tl, i) => tile(tl, P + (i % 2) * (colW + gap), y + Math.floor(i / 2) * (152 + gap), colW, 152, 64));
+  return y;
 }
 
 let pngURL = null, lastFocus = null;
 async function openGraphic(kind) {
-  const spec = { summary: summarySpec, teams: teamSpec, confs: confSpec, days: daySpec }[kind]?.() || extremeSpec(kind);
+  const spec = { day: dayOnlySpec, summary: summarySpec, teams: teamSpec, confs: confSpec, days: daySpec }[kind]?.() || extremeSpec(kind);
   if (!spec.rows.length && !spec.tiles) return;
   const cv = await drawGraphic(spec);
   const blob = await new Promise((r) => cv.toBlob(r, "image/png"));
   if (pngURL) URL.revokeObjectURL(pngURL);
   pngURL = URL.createObjectURL(blob);
-  const file = `turnstile-${spec.name}-${DATES().slice(-1)[0]}.png`;
+  const file = `turnstile-${spec.name}-${spec.name === "day" ? DAILY_DATE : DATES().slice(-1)[0]}.png`;
   $("#png-img").src = pngURL; $("#png-img").alt = spec.title;
   $("#png-dl").href = pngURL; $("#png-dl").download = file;
   $("#png-title").textContent = spec.title;
