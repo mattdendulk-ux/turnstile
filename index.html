@@ -850,7 +850,7 @@ function dayOnlySpec() {
   const top = GAMES.filter((g) => g.date === d && g.att > 0).sort((a, b) => b.att - a.att).slice(0, 5);
   return {
     name: "day", title: new Date(d + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
-    subtitle: "NCAA Division I men's basketball · one day of crowds",
+    subtitle: "",
     tilesLabel: "D1 home games",
     tiles: [
       { label: "Home seats filled", value: t("#daily-fill") },
@@ -999,7 +999,7 @@ async function drawGraphic(spec) {
   const tl = wrapLines(ctx, spec.title.toUpperCase(), W - 2 * P, 2);
   tl.forEach((l) => { ctx.fillText(l, P, y); y += 82; });
   ctx.font = `400 26px ${F.body}`; spacing(0); ctx.fillStyle = INK.muted;
-  const sl = wrapLines(ctx, spec.subtitle, W - 2 * P, 2);
+  const sl = spec.subtitle ? wrapLines(ctx, spec.subtitle, W - 2 * P, 2) : [];
   y += 2; sl.forEach((l) => { ctx.fillText(l, P, y); y += 36; });
 
   if (spec.tiles) {
