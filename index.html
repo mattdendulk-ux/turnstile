@@ -848,6 +848,8 @@ const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
 function dayOnlySpec() {
   const t = (id) => $(id).textContent.trim(), d = DAILY_DATE;
   const top = GAMES.filter((g) => g.date === d && g.att > 0).sort((a, b) => b.att - a.att).slice(0, 5);
+  // Fullest arenas: D1 home games that day with a known capacity, ties broken by crowd size
+  const full = HOME.filter((g) => g.date === d && g.fill !== null).sort((a, b) => b.fill - a.fill || b.att - a.att).slice(0, 5);
   return {
     name: "day", title: new Date(d + "T12:00:00").toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
     subtitle: "",
@@ -858,9 +860,13 @@ function dayOnlySpec() {
       { label: "Largest crowd", value: t("#daily-max"), sub: t("#daily-max-s") },
       { label: "D1 home games", value: t("#daily-n") },
     ],
-    rowsLabel: "Biggest crowds of the day",
-    rows: top.map((g) => ({ label: `${g.away.name} at ${g.home.name}`, value: g.att, display: fmt(g.att),
-      sub: g.venue + (g.fill !== null ? ` · ${pct(g.fill)} full` : "") })),
+    rows: [],
+    lists: [
+      { label: "Biggest crowds", rows: top.map((g) => ({ label: g.home.name, value: g.att, display: fmt(g.att),
+          sub: `vs. ${g.away.name}` + (g.fill !== null ? ` · ${pct(g.fill)} full` : "") })) },
+      { label: "Fullest arenas", rows: full.map((g) => ({ label: g.home.name, value: Math.min(g.fill, 1.5), display: pct(g.fill),
+          sub: `${fmt(g.att)} of ${fmt(g.cap)} seats` })) },
+    ],
   };
 }
 function summarySpec() {
@@ -1004,6 +1010,7 @@ async function drawGraphic(spec) {
 
   if (spec.tiles) {
     y = drawTiles(ctx, spec, y + 30, W, P, spacing);
+    if (spec.lists) { drawLists(ctx, spec.lists, y, W, H, P, spacing); drawFooter(ctx, W, H, P); return cv; }
     if (!spec.rows.length) { drawFooter(ctx, W, H, P); return cv; }
     ctx.font = `600 18px ${F.body}`; spacing(2.5); ctx.fillStyle = INK.muted; ctx.fillText(spec.rowsLabel.toUpperCase(), P, y); spacing(0);
     ctx.fillStyle = INK.accent; ctx.fillRect(P, y + 14, 48, 3);
@@ -1038,6 +1045,34 @@ async function drawGraphic(spec) {
 
   drawFooter(ctx, W, H, P);
   return cv;
+}
+// Two side-by-side top-five lists (used by the day image)
+function drawLists(ctx, lists, y, W, H, P, spacing) {
+  const gap = 28, colW = (W - 2 * P - gap) / 2, top = y + 30, bottom = H - 150;
+  lists.forEach((list, li) => {
+    const x0 = P + li * (colW + gap);
+    ctx.font = `600 18px ${F.body}`; spacing(2.5); ctx.fillStyle = INK.muted; ctx.textBaseline = "alphabetic";
+    ctx.fillText(list.label.toUpperCase(), x0, y); spacing(0);
+    ctx.fillStyle = INK.accent; ctx.fillRect(x0, y + 14, 48, 3);
+    const n = Math.max(1, list.rows.length), rowH = Math.min(80, (bottom - top) / 5);
+    const max = Math.max(...list.rows.map((r) => r.value), 0) || 1;
+    const xBar = x0 + 34, barW = colW - 34;
+    list.rows.forEach((r, i) => {
+      const ry = top + i * rowH, mid = ry + rowH / 2;
+      ctx.fillStyle = INK.track; ctx.fillRect(xBar, ry + 3, barW, rowH - 6);
+      ctx.fillStyle = INK.barFill; ctx.fillRect(xBar, ry + 3, Math.max(4, barW * Math.max(0, r.value) / max), rowH - 6);
+      if (i === 0) { ctx.fillStyle = INK.accent; ctx.fillRect(xBar, ry + 3, 4, rowH - 6); }
+      ctx.textBaseline = "middle";
+      ctx.font = `500 22px ${F.mono}`; ctx.fillStyle = INK.muted; ctx.fillText(String(i + 1), x0, mid + 1);
+      ctx.font = `800 40px ${F.display}`; ctx.fillStyle = INK.text; ctx.textAlign = "right";
+      ctx.fillText(r.display, x0 + colW - 12, mid + 2); const vw = ctx.measureText(r.display).width; ctx.textAlign = "left";
+      const lw = colW - 12 - vw - 20 - (xBar + 14 - x0);
+      ctx.font = `600 26px ${F.body}`; ctx.fillStyle = INK.text; ctx.fillText(fit(ctx, r.label, lw), xBar + 14, mid - 11);
+      ctx.font = `400 17px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText(fit(ctx, r.sub, lw), xBar + 14, mid + 17);
+      ctx.textBaseline = "alphabetic";
+    });
+    if (!list.rows.length) { ctx.font = `400 20px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText("No games with a known capacity", x0, top + 30); }
+  });
 }
 function drawFooter(ctx, W, H, P) {
   ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.fillRect(P, H - 118, W - 2 * P, 1);
