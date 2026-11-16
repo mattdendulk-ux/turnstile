@@ -27,6 +27,7 @@ MANUAL = {
     "McDonough Arena": 2500,                       # Georgetown's on-campus gym (Wikipedia: McDonough Gymnasium)
     "M&T Bank Center at Gampel Pavilion": 10167,   # UConn; sponsor name collides with Quinnipiac's M&T Bank Arena
     "ICCU Arena": 4200,                            # Idaho (Moscow); name collides with Idaho State's ICCU Dome
+    "Tucker Center": 12100,                        # Florida State; ESPN also lists it as "Donald L. Tucker Center"
 }
 # Venues whose home-team match would point at the wrong building; left blank until confirmed
 SKIP = {"Skip Chappelle Court in Memorial Gymnasium", "Bodford Arena", "Lawler Arena", "Canastra Hammer Arena",
@@ -57,6 +58,15 @@ for g in games:
         v["homes"].add(g["home"]["name"].lower())
 
 out, unmatched = {}, []
+# A team that plays in two buildings (e.g. Gonzaga's campus gym and a downtown arena): if one of
+# its venues already matches an arena by name, its other venue can't borrow that arena's capacity.
+def name_score(v, w):
+    vt, wt = toks(v), toks(w["name"])
+    return len(vt & wt) / max(1, len(vt | wt))
+def taken_by_sibling(vname, info, w):
+    return any(o != vname and info["homes"] & oi["homes"] and name_score(o, w) >= 0.5
+               for o, oi in venues.items())
+
 for vname, info in sorted(venues.items()):
     if vname in SKIP:
         unmatched.append((vname, info["city"], "skipped")); continue
@@ -70,8 +80,8 @@ for vname, info in sorted(venues.items()):
             continue
         wt = toks(w["name"])
         s = len(vt & wt) / max(1, len(vt | wt))
-        if any(t in w["teams"] for t in info["homes"]):
-            s += 0.35  # home team plays here
+        if any(t in w["teams"] for t in info["homes"]) and not taken_by_sibling(vname, info, w):
+            s += 0.35  # home team plays here (and this isn't the home team's other building)
         if s > score:
             best, score = w, s
     if best and score >= 0.35:  # strong name match, or the home team plays there
@@ -82,4 +92,4 @@ for vname, info in sorted(venues.items()):
 (ROOT / "data/arenas.json").write_text(json.dumps({k: v["cap"] for k, v in out.items()}, indent=0, ensure_ascii=False))
 print(f"matched {len(out)} of {len(venues)} venues")
 for u in unmatched:
-    print("UNMATCHED", u)
+    print("UNMATCHED", u, flush=True)
