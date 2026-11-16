@@ -1074,10 +1074,13 @@ function drawLists(ctx, lists, y, W, H, P, spacing) {
     if (!list.rows.length) { ctx.font = `400 20px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText("No games with a known capacity", x0, top + 30); }
   });
 }
+const SITE = "collegehoopsattendance.com";
 function drawFooter(ctx, W, H, P) {
   ctx.fillStyle = "rgba(255,255,255,0.12)"; ctx.fillRect(P, H - 118, W - 2 * P, 1);
   ctx.font = `600 22px ${F.body}`; ctx.fillStyle = INK.text; ctx.fillText("Turnstile by Matt Den Dulk", P, H - 76);
-  ctx.textAlign = "right"; ctx.font = `400 22px ${F.body}`; ctx.fillText("mattdendulk@gmail.com", W - P, H - 76); ctx.textAlign = "left";
+  const nw = ctx.measureText("Turnstile by Matt Den Dulk").width;
+  ctx.font = `400 22px ${F.body}`; ctx.fillStyle = INK.muted; ctx.fillText("  ·  mattdendulk@gmail.com", P + nw, H - 76);
+  ctx.textAlign = "right"; ctx.font = `600 24px ${F.body}`; ctx.fillStyle = INK.accent; ctx.fillText(SITE, W - P, H - 76); ctx.textAlign = "left";
   ctx.font = `400 18px ${F.body}`; ctx.fillStyle = INK.muted;
   ctx.fillText("Attendance from ESPN box scores · Arena capacity from Wikipedia · Rankings use home games only", P, H - 44);
 }
