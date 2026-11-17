@@ -12,19 +12,6 @@
 ],
 "games": [
 {
-"team": "Pittsburg State",
-"season": "2026-27",
-"id": "15393",
-"opp": "Kansas",
-"where": "away",
-"result": "L",
-"us": 62,
-"them": 80,
-"date": "2026-10-16",
-"att": 15200,
-"site": "Allen Fieldhouse, Lawrence, KS"
-},
-{
 "team": "Black Hills State",
 "season": "2026-27",
 "id": "9088",

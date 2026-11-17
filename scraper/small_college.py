@@ -67,6 +67,8 @@ def parse_schedule(page, season):
         res = re.search(r"\b([WLT]),\s*(\d+)-(\d+)", text(block))
         if not box or not res:
             continue  # not played yet, or no box score posted
+        if re.search(r"exhibition", cls + " " + text(block), re.I):
+            continue  # exhibitions don't count
         opp = re.search(r'sidearm-schedule-game-opponent-name[^>]*>(.*?)</(?:span|div)>', block, re.S)
         where = "home" if "home-game" in cls else "away" if "away-game" in cls else "neutral"
         hi, lo = sorted((int(res.group(2)), int(res.group(3))), reverse=True)
@@ -132,6 +134,10 @@ def scrape_division(div, schools, season):
             if key not in have:
                 added += 1
             have[key] = {"team": name, "season": season, **g, **box}  # box score's opponent name wins
+        # Drop saved games for this school that are no longer on its schedule (exhibitions, corrections)
+        current = {g["id"] for g in sched}
+        for k in [k for k in have if k[0] == name and k[1] not in current]:
+            del have[k]
         print(f"{div.upper()} {name}: {len(sched)} completed games on schedule")
     store = {
         "updated": datetime.now(ZoneInfo("America/New_York")).isoformat(timespec="minutes"),
