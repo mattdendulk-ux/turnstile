@@ -55,6 +55,10 @@ The header (a season snapshot of the four headline stats plus the most recent or
 - A game with no attendance in the box score shows as "Not reported" and is excluded from every average.
 - Opponents outside Division I appear in the game list with no conference.
 
+## D3 watch
+
+`scraper/d3.py` tracks a short list of Division III schools (Hope, Trine, Illinois Wesleyan, Calvin, Mount Union) from each school's own athletics site: the schedule page gives home/away and the result, and each box score gives the attendance. It writes `data/d3.json`, a separate file the D1 rankings, averages and charts never read. It runs in the daily job after the D1 scrape; if a school's site is down, the D1 update still goes through. To track another D3 school that uses a SIDEARM athletics site, add it to `SCHOOLS` at the top of the script.
+
 ## Adding D2, D3 and NAIA later
 
 ESPN's feed only covers D1 reliably. The next step is a second scraper per source (stats.ncaa.org for D2 and D3, school SIDEARM and PrestoSports box scores, and PrestoSports for NAIA) writing to the same `games.json` format with a `division` field added. The site's filters then extend to a division selector.

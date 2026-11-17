@@ -30,10 +30,12 @@ jobs:
           END: ${{ inputs.end }}
         run: python scraper/scrape.py $START $END
       - run: python scraper/build_arenas.py   # match any new venues to capacities
+      - name: D3 watch (separate file; never touches D1 data)
+        run: python scraper/d3.py || echo "D3 scrape failed; D1 update continues"
       - name: Commit new data
         run: |
           git config user.name "turnstile-bot"
           git config user.email "turnstile-bot@users.noreply.github.com"
-          git add data/games.json data/arenas.json
+          git add data/games.json data/arenas.json data/d3.json
           git diff --cached --quiet || git commit -m "Attendance update $(date -u +%F)"
           git push
