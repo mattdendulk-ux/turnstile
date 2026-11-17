@@ -55,9 +55,9 @@ The header (a season snapshot of the four headline stats plus the most recent or
 - A game with no attendance in the box score shows as "Not reported" and is excluded from every average.
 - Opponents outside Division I appear in the game list with no conference.
 
-## D3 watch
+## D2 and D3 watch
 
-`scraper/d3.py` tracks a short list of Division III schools (Hope, Trine, Illinois Wesleyan, Calvin, Mount Union) from each school's own athletics site: the schedule page gives home/away and the result, and each box score gives the attendance. It writes `data/d3.json`, a separate file the D1 rankings, averages and charts never read. It runs in the daily job after the D1 scrape; if a school's site is down, the D1 update still goes through. To track another D3 school that uses a SIDEARM athletics site, add it to `SCHOOLS` at the top of the script.
+`scraper/small_college.py` tracks a short list of Division II schools (Fort Hays State, Northern State, Pittsburg State, Minnesota State, Drury, Black Hills State, Missouri Western) and Division III schools (Hope, Trine, Illinois Wesleyan, Calvin, Mount Union) from each school's own athletics site: the schedule page gives home/away and the result, and each box score gives the attendance. It writes `data/d2.json` and `data/d3.json`, separate files the D1 rankings, averages and charts never read. It runs in the daily job after the D1 scrape; if a school's site is down, the D1 update still goes through. To track another school that uses a SIDEARM athletics site, add it to its division in `DIVISIONS` at the top of the script.
 
 ## Adding D2, D3 and NAIA later
 

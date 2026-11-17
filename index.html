@@ -280,6 +280,7 @@ h2 { font: 800 26px/1.1 var(--font-display); text-transform: uppercase; letter-s
       <a href="#days" data-view="days">By day</a>
       <a href="#charts" data-view="charts">Charts</a>
       <a href="#extremes" data-view="extremes">Biggest &amp; smallest</a>
+      <a href="#d2" data-view="d2">D2 watch</a>
       <a href="#d3" data-view="d3">D3 watch</a>
     </nav>
   </div>
@@ -380,6 +381,21 @@ h2 { font: 800 26px/1.1 var(--font-display); text-transform: uppercase; letter-s
       <div class="chart" id="ch-hist"></div>
     </figure>
     <div class="chart-tip" id="chart-tip" hidden></div>
+  </section>
+
+  <!-- D2 WATCH (separate data file; never counted in any D1 number) -->
+  <section id="v-d2" data-section="d2" hidden>
+    <div class="sec-head"><div><h2>D2 watch</h2><p class="sub">Home crowds for the Division II schools Turnstile tracks, from each school's box scores. These games are kept separate and never count toward any D1 number on the site.</p></div><button type="button" class="png-btn" data-graphic="d2" title="Download this list as a PNG infographic"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Save as image</button></div>
+    <div class="table-box"><table>
+      <thead><tr><th>#</th><th>School</th><th class="n">Home games</th><th class="n">Avg. home crowd</th><th class="n">High</th><th class="n">Total</th></tr></thead>
+      <tbody id="d2-body"><tr><td colspan="6" class="empty">Loading D2 games…</td></tr></tbody>
+    </table></div>
+    <h2 style="margin-top:28px">Every game</h2>
+    <p class="sub">Home, away and neutral-site games for each tracked school, newest first.</p>
+    <div class="table-box"><table>
+      <thead><tr><th>Date</th><th>Game</th><th class="n">Result</th><th>Site</th><th class="n">Attendance</th></tr></thead>
+      <tbody id="d2-games"></tbody>
+    </table></div>
   </section>
 
   <!-- D3 WATCH (separate data file; never counted in any D1 number) -->
@@ -727,7 +743,7 @@ function renderExtremes() {
 }
 
 // ---- Views (hash routing) ----
-const VIEWS = ["games", "teams", "conferences", "days", "charts", "extremes", "d3"];
+const VIEWS = ["games", "teams", "conferences", "days", "charts", "extremes", "d2", "d3"];
 function route() {
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "games";
   document.querySelectorAll("[data-section]").forEach((s) => (s.hidden = s.dataset.section !== v));
@@ -862,25 +878,27 @@ const DATES = () => [...new Set(GAMES.map((g) => g.date))].sort();
 const rangeText = () => { const d = DATES(); return `${day(d[0])} – ${day(d[d.length - 1])}, ${d[d.length - 1].slice(0, 4)}`; };
 const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
-// ---- D3 watch: its own data file, so it can never change a D1 number ----
-let D3 = null;
-fetch("data/d3.json").then((r) => (r.ok ? r.json() : null)).then((d) => { D3 = d; renderD3(); }).catch(() => renderD3());
-function d3Stats() {
+// ---- D2 and D3 watch: their own data files, so they can never change a D1 number ----
+const SMALL = { d2: null, d3: null };
+for (const div of ["d2", "d3"]) {
+  fetch(`data/${div}.json`).then((r) => (r.ok ? r.json() : null)).then((d) => { SMALL[div] = d; renderSmall(div); }).catch(() => renderSmall(div));
+}
+function smallStats(div) {
   const m = new Map();
-  for (const g of (D3?.games || []).filter((g) => g.where === "home" && g.att > 0)) {
+  for (const g of (SMALL[div]?.games || []).filter((g) => g.where === "home" && g.att > 0)) {
     const t = m.get(g.team) || { name: g.team, atts: [] };
     t.atts.push(g.att); m.set(g.team, t);
   }
   return [...m.values()].map((t) => { const total = t.atts.reduce((a, b) => a + b, 0);
     return { ...t, n: t.atts.length, total, avg: total / t.atts.length, high: Math.max(...t.atts) }; }).sort((a, b) => b.avg - a.avg);
 }
-function renderD3() {
-  const rows = d3Stats();
-  $("#d3-body").innerHTML = rows.length ? rows.map((t, i) => `<tr><td class="rank">${i + 1}</td><td class="team">${esc(t.name)}<span class="m-sub">${plural(t.n, "home game")}</span></td>
+function renderSmall(div) {
+  const rows = smallStats(div), D = div.toUpperCase();
+  $(`#${div}-body`).innerHTML = rows.length ? rows.map((t, i) => `<tr><td class="rank">${i + 1}</td><td class="team">${esc(t.name)}<span class="m-sub">${plural(t.n, "home game")}</span></td>
     <td class="n">${t.n}</td><td class="n"><b>${fmt(t.avg)}</b></td><td class="n">${fmt(t.high)}</td><td class="n dim">${fmt(t.total)}</td></tr>`).join("")
-    : `<tr><td colspan="6" class="empty">No D3 home games yet. They appear after the next morning update.</td></tr>`;
-  const games = [...(D3?.games || [])].sort((a, b) => b.date.localeCompare(a.date));
-  $("#d3-games").innerHTML = games.map((g) => {
+    : `<tr><td colspan="6" class="empty">No ${D} home games yet. They appear after the next morning update.</td></tr>`;
+  const games = [...(SMALL[div]?.games || [])].sort((a, b) => b.date.localeCompare(a.date));
+  $(`#${div}-games`).innerHTML = games.map((g) => {
     const label = g.where === "home" ? `${esc(g.opp)} <span class="dim">at</span> <b>${esc(g.team)}</b>`
       : g.where === "away" ? `<b>${esc(g.team)}</b> <span class="dim">at</span> ${esc(g.opp)}`
       : `<b>${esc(g.team)}</b> <span class="dim">vs.</span> ${esc(g.opp)}<span class="pill neu">Neutral</span>`;
@@ -888,10 +906,11 @@ function renderD3() {
       <td class="dim">${esc(g.site)}</td><td class="n">${g.att ? `<span class="att">${fmt(g.att)}</span>` : '<span class="na">Not reported</span>'}</td></tr>`;
   }).join("");
 }
-function d3Spec() {
-  const rows = d3Stats(), last = (D3?.games || []).map((g) => g.date).sort().pop();
-  return { name: "d3-watch", title: "D3 home crowds",
-    subtitle: `Division III men's basketball · tracked schools${last ? " · through " + day(last) : ""}`,
+function smallSpec(div) {
+  const rows = smallStats(div), last = (SMALL[div]?.games || []).map((g) => g.date).sort().pop();
+  const name = div === "d2" ? "Division II" : "Division III";
+  return { name: `${div}-watch`, title: `${div.toUpperCase()} home crowds`,
+    subtitle: `${name} men's basketball · tracked schools${last ? " · through " + day(last) : ""}`,
     rows: rows.map((t) => ({ label: t.name, value: t.avg, display: fmt(t.avg), sub: `${plural(t.n, "home game")} · high ${fmt(t.high)} · total ${fmt(t.total)}` })) };
 }
 
@@ -1159,7 +1178,7 @@ function drawTiles(ctx, spec, y, W, P, spacing) {
 
 let pngURL = null, lastFocus = null;
 async function openGraphic(kind) {
-  const spec = { d3: d3Spec, day: dayOnlySpec, summary: summarySpec, teams: teamSpec, confs: confSpec, days: daySpec }[kind]?.() || extremeSpec(kind);
+  const spec = { d2: () => smallSpec("d2"), d3: () => smallSpec("d3"), day: dayOnlySpec, summary: summarySpec, teams: teamSpec, confs: confSpec, days: daySpec }[kind]?.() || extremeSpec(kind);
   if (!spec.rows.length && !spec.tiles) return;
   const cv = await drawGraphic(spec);
   const blob = await new Promise((r) => cv.toBlob(r, "image/png"));

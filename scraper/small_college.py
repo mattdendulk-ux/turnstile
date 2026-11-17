@@ -1,15 +1,15 @@
 """
-Turnstile — D3 men's basketball attendance for a short list of tracked schools.
+Turnstile — D2 and D3 men's basketball attendance for a short list of tracked schools.
 
-Kept completely separate from the D1 data: results go to data/d3.json, which the
-D1 rankings, averages and charts never read.
+Kept completely separate from the D1 data: results go to data/d2.json and
+data/d3.json, which the D1 rankings, averages and charts never read.
 
 Each school's athletics site (SIDEARM) lists every game on its schedule page,
 tagged home / away / neutral with the result; each game's box score has the
 attendance, date and site. Box scores already saved are not fetched again.
 
-Usage:  python scraper/d3.py
-Add a school: append (name, athletics site) to SCHOOLS.
+Usage:  python scraper/small_college.py
+Add a school: append (name, athletics site) to its division in DIVISIONS.
 """
 import html
 import json
@@ -23,17 +23,27 @@ from zoneinfo import ZoneInfo
 import requests
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data" / "d3.json"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; Turnstile attendance tracker)"}
 PAUSE = 1.5  # seconds between requests
 
-SCHOOLS = [
-    ("Hope", "https://athletics.hope.edu"),
-    ("Trine", "https://trinethunder.com"),
-    ("Illinois Wesleyan", "https://www.iwusports.com"),
-    ("Calvin", "https://calvinknights.com"),
-    ("Mount Union", "https://athletics.mountunion.edu"),
-]
+DIVISIONS = {
+    "d2": [
+        ("Fort Hays State", "https://fhsuathletics.com"),
+        ("Northern State", "https://nsuwolves.com"),
+        ("Pittsburg State", "https://pittstategorillas.com"),
+        ("Minnesota State", "https://msumavericks.com"),
+        ("Drury", "https://drurypanthers.com"),
+        ("Black Hills State", "https://bhsuathletics.com"),
+        ("Missouri Western", "https://gogriffons.com"),
+    ],
+    "d3": [
+        ("Hope", "https://athletics.hope.edu"),
+        ("Trine", "https://trinethunder.com"),
+        ("Illinois Wesleyan", "https://www.iwusports.com"),
+        ("Calvin", "https://calvinknights.com"),
+        ("Mount Union", "https://athletics.mountunion.edu"),
+    ],
+}
 
 
 def season_now():
@@ -97,12 +107,12 @@ def get(url):
     return r.text
 
 
-def main():
-    season = season_now()
-    store = json.loads(DATA.read_text()) if DATA.exists() else {"games": []}
+def scrape_division(div, schools, season):
+    path = ROOT / "data" / f"{div}.json"
+    store = json.loads(path.read_text()) if path.exists() else {"games": []}
     have = {(g["team"], g["id"]): g for g in store["games"]}
     added = 0
-    for name, site in SCHOOLS:
+    for name, site in schools:
         try:
             sched = parse_schedule(get(f"{site}/sports/mens-basketball/schedule/{season}"), season)
         except requests.RequestException as e:
@@ -122,15 +132,22 @@ def main():
             if key not in have:
                 added += 1
             have[key] = {"team": name, "season": season, **g, **box}  # box score's opponent name wins
-        print(f"{name}: {len(sched)} completed games on schedule")
+        print(f"{div.upper()} {name}: {len(sched)} completed games on schedule")
     store = {
         "updated": datetime.now(ZoneInfo("America/New_York")).isoformat(timespec="minutes"),
-        "schools": [n for n, _ in SCHOOLS],
+        "division": div.upper(),
+        "schools": [n for n, _ in schools],
         "games": sorted(have.values(), key=lambda g: (g["date"], g["team"])),
     }
-    DATA.parent.mkdir(parents=True, exist_ok=True)
-    DATA.write_text(json.dumps(store, indent=0, ensure_ascii=False))
-    print(f"{added} new D3 game(s), {len(have)} total")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(store, indent=0, ensure_ascii=False))
+    print(f"{div.upper()}: {added} new game(s), {len(have)} total")
+
+
+def main():
+    season = season_now()
+    for div, schools in DIVISIONS.items():
+        scrape_division(div, schools, season)
 
 
 if __name__ == "__main__":
