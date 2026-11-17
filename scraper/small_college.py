@@ -131,6 +131,8 @@ def scrape_division(div, schools, season):
             except requests.RequestException as e:
                 print(f"[warn] {name} {url}: {e}", file=sys.stderr)
                 continue
+            if box["date"] and box["date"] < f"{season[:4]}-11-01":
+                continue  # preseason (exhibitions are played before the regular season opens in November)
             if key not in have:
                 added += 1
             have[key] = {"team": name, "season": season, **g, **box}  # box score's opponent name wins
