@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-17T12:01-05:00",
+"updated": "2026-11-18T09:23-05:00",
 "division": "D3",
 "schools": [
 "Hope",
@@ -216,6 +216,19 @@
 "date": "2026-11-15",
 "att": 1074,
 "site": "Shirk Center, Bloomington, IL"
+},
+{
+"team": "Hope",
+"season": "2026-27",
+"id": "18664",
+"opp": "North Central College",
+"where": "away",
+"result": "L",
+"us": 69,
+"them": 74,
+"date": "2026-11-17",
+"att": 207,
+"site": "Gregory Arena, Naperville, IL"
 }
 ]
 }

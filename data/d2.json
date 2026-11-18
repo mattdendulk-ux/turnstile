@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-17T12:01-05:00",
+"updated": "2026-11-18T09:23-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -244,6 +244,32 @@
 "date": "2026-11-14",
 "att": 134,
 "site": ""
+},
+{
+"team": "Drury",
+"season": "2026-27",
+"id": "11950",
+"opp": "Central Bible",
+"where": "home",
+"result": "W",
+"us": 83,
+"them": 46,
+"date": "2026-11-17",
+"att": 673,
+"site": "O'Reilly Family Event Center, Springfield, MO"
+},
+{
+"team": "Minnesota State",
+"season": "2026-27",
+"id": "20186",
+"opp": "Dakota State",
+"where": "home",
+"result": "W",
+"us": 112,
+"them": 66,
+"date": "2026-11-17",
+"att": 1063,
+"site": "Bresnan Arena In Taylor Center, Mankato, MN"
 }
 ]
 }
