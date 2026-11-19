@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-18T09:23-05:00",
+"updated": "2026-11-19T09:25-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -270,6 +270,19 @@
 "date": "2026-11-17",
 "att": 1063,
 "site": "Bresnan Arena In Taylor Center, Mankato, MN"
+},
+{
+"team": "Fort Hays State",
+"season": "2026-27",
+"id": "14232",
+"opp": "William Jewell",
+"where": "away",
+"result": "L",
+"us": 61,
+"them": 65,
+"date": "2026-11-18",
+"att": 136,
+"site": "Mabee Center , Liberty, MO"
 }
 ]
 }

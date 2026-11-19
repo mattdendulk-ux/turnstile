@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-18T09:23-05:00",
+"updated": "2026-11-19T09:25-05:00",
 "division": "D3",
 "schools": [
 "Hope",
@@ -229,6 +229,19 @@
 "date": "2026-11-17",
 "att": 207,
 "site": "Gregory Arena, Naperville, IL"
+},
+{
+"team": "Trine",
+"season": "2026-27",
+"id": "8532",
+"opp": "Anderson (Ind.)",
+"where": "home",
+"result": "W",
+"us": 103,
+"them": 95,
+"date": "2026-11-18",
+"att": 911,
+"site": "MTI Center, Angola, IN"
 }
 ]
 }
