@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-19T09:25-05:00",
+"updated": "2026-11-20T09:23-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -283,6 +283,19 @@
 "date": "2026-11-18",
 "att": 136,
 "site": "Mabee Center , Liberty, MO"
+},
+{
+"team": "Pittsburg State",
+"season": "2026-27",
+"id": "15396",
+"opp": "Missouri S&T",
+"where": "home",
+"result": "W",
+"us": 81,
+"them": 63,
+"date": "2026-11-19",
+"att": 811,
+"site": "John Lance Arena, Pittsburg, KS"
 }
 ]
 }
