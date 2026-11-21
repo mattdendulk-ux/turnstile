@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-20T09:24-05:00",
+"updated": "2026-11-21T09:05-05:00",
 "division": "D3",
 "schools": [
 "Hope",
@@ -242,6 +242,19 @@
 "date": "2026-11-18",
 "att": 911,
 "site": "MTI Center, Angola, IN"
+},
+{
+"team": "Illinois Wesleyan",
+"season": "2026-27",
+"id": "20235",
+"opp": "Denison",
+"where": "neutral",
+"result": "L",
+"us": 62,
+"them": 71,
+"date": "2026-11-20",
+"att": 168,
+"site": "Branch Rickey Arena, Delaware, OH"
 }
 ]
 }

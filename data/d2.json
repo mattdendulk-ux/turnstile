@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-20T09:23-05:00",
+"updated": "2026-11-21T09:04-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -296,6 +296,45 @@
 "date": "2026-11-19",
 "att": 811,
 "site": "John Lance Arena, Pittsburg, KS"
+},
+{
+"team": "Black Hills State",
+"season": "2026-27",
+"id": "10373",
+"opp": "Augustana",
+"where": "away",
+"result": "W",
+"us": 68,
+"them": 66,
+"date": "2026-11-20",
+"att": 1047,
+"site": "Elmen Center, Sioux Falls, SD"
+},
+{
+"team": "Minnesota State",
+"season": "2026-27",
+"id": "20220",
+"opp": "Lake Superior State",
+"where": "neutral",
+"result": "W",
+"us": 84,
+"them": 77,
+"date": "2026-11-20",
+"att": 108,
+"site": ""
+},
+{
+"team": "Missouri Western",
+"season": "2026-27",
+"id": "9703",
+"opp": "Southwest Minnesota State",
+"where": "neutral",
+"result": "L",
+"us": 61,
+"them": 75,
+"date": "2026-11-20",
+"att": 528,
+"site": "Bearcat Arena, Maryville, MO"
 }
 ]
 }
