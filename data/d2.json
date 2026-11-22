@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-21T09:04-05:00",
+"updated": "2026-11-22T09:02-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -334,6 +334,58 @@
 "them": 75,
 "date": "2026-11-20",
 "att": 528,
+"site": "Bearcat Arena, Maryville, MO"
+},
+{
+"team": "Black Hills State",
+"season": "2026-27",
+"id": "10374",
+"opp": "Sioux Falls",
+"where": "away",
+"result": "L",
+"us": 54,
+"them": 71,
+"date": "2026-11-21",
+"att": 1048,
+"site": "Stewart Center, Sioux Falls, SD"
+},
+{
+"team": "Fort Hays State",
+"season": "2026-27",
+"id": "14233",
+"opp": "South Dakota Mines",
+"where": "home",
+"result": "L",
+"us": 69,
+"them": 72,
+"date": "2026-11-21",
+"att": 1525,
+"site": "Gross Memorial Coliseum, Hays, KS"
+},
+{
+"team": "Minnesota State",
+"season": "2026-27",
+"id": "20221",
+"opp": "Northern Michigan",
+"where": "neutral",
+"result": "W",
+"us": 79,
+"them": 77,
+"date": "2026-11-21",
+"att": 314,
+"site": ""
+},
+{
+"team": "Missouri Western",
+"season": "2026-27",
+"id": "9704",
+"opp": "Mary",
+"where": "neutral",
+"result": "W",
+"us": 93,
+"them": 77,
+"date": "2026-11-21",
+"att": 0,
 "site": "Bearcat Arena, Maryville, MO"
 }
 ]

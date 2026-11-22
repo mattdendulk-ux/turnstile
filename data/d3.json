@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-21T09:05-05:00",
+"updated": "2026-11-22T09:02-05:00",
 "division": "D3",
 "schools": [
 "Hope",
@@ -255,6 +255,45 @@
 "date": "2026-11-20",
 "att": 168,
 "site": "Branch Rickey Arena, Delaware, OH"
+},
+{
+"team": "Calvin",
+"season": "2026-27",
+"id": "9262",
+"opp": "Messiah University",
+"where": "home",
+"result": "W",
+"us": 82,
+"them": 51,
+"date": "2026-11-21",
+"att": 502,
+"site": "Van Noord Arena, Grand Rapids, MI"
+},
+{
+"team": "Illinois Wesleyan",
+"season": "2026-27",
+"id": "20236",
+"opp": "St. Joseph's (Maine)",
+"where": "neutral",
+"result": "L",
+"us": 74,
+"them": 77,
+"date": "2026-11-21",
+"att": 142,
+"site": "Branch Rickey Arena, Delaware, OH"
+},
+{
+"team": "Trine",
+"season": "2026-27",
+"id": "8533",
+"opp": "Ohio Northern",
+"where": "away",
+"result": "L",
+"us": 67,
+"them": 69,
+"date": "2026-11-21",
+"att": 157,
+"site": "ONU Sports Center, Ada, OH"
 }
 ]
 }
