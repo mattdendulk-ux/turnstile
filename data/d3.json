@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-22T09:02-05:00",
+"updated": "2026-11-23T09:30-05:00",
 "division": "D3",
 "schools": [
 "Hope",
@@ -294,6 +294,19 @@
 "date": "2026-11-21",
 "att": 157,
 "site": "ONU Sports Center, Ada, OH"
+},
+{
+"team": "Mount Union",
+"season": "2026-27",
+"id": "12268",
+"opp": "Transylvania",
+"where": "away",
+"result": "L",
+"us": 53,
+"them": 57,
+"date": "2026-11-22",
+"att": 0,
+"site": "Clive M. Beck Center, Lexington, KY"
 }
 ]
 }
