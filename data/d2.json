@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-24T09:26-05:00",
+"updated": "2026-11-25T09:29-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -387,6 +387,71 @@
 "date": "2026-11-21",
 "att": 0,
 "site": "Bearcat Arena, Maryville, MO"
+},
+{
+"team": "Drury",
+"season": "2026-27",
+"id": "11951",
+"opp": "Pittsburg State",
+"where": "home",
+"result": "L",
+"us": 63,
+"them": 90,
+"date": "2026-11-24",
+"att": 1076,
+"site": "O'Reilly Family Event Center, Springfield, MO"
+},
+{
+"team": "Fort Hays State",
+"season": "2026-27",
+"id": "14234",
+"opp": "Sterling College",
+"where": "home",
+"result": "W",
+"us": 78,
+"them": 59,
+"date": "2026-11-24",
+"att": 4435,
+"site": "Gross Memorial Coliseum, Hays, KS"
+},
+{
+"team": "Minnesota State",
+"season": "2026-27",
+"id": "20222",
+"opp": "St. Cloud State",
+"where": "away",
+"result": "L",
+"us": 78,
+"them": 82,
+"date": "2026-11-24",
+"att": 514,
+"site": "Halenbeck Hall, St. Cloud, MN"
+},
+{
+"team": "Northern State",
+"season": "2026-27",
+"id": "14812",
+"opp": "Jamestown",
+"where": "away",
+"result": "L",
+"us": 68,
+"them": 76,
+"date": "2026-11-24",
+"att": 349,
+"site": "Harold Newman Arena, Jamestown, ND"
+},
+{
+"team": "Pittsburg State",
+"season": "2026-27",
+"id": "15397",
+"opp": "Drury",
+"where": "away",
+"result": "W",
+"us": 90,
+"them": 63,
+"date": "2026-11-24",
+"att": 1076,
+"site": "O'Reilly Family Event Center, Springfield, MO"
 }
 ]
 }

@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-24T09:26-05:00",
+"updated": "2026-11-25T09:29-05:00",
 "division": "D3",
 "schools": [
 "Hope",
@@ -307,6 +307,32 @@
 "date": "2026-11-22",
 "att": 0,
 "site": "Clive M. Beck Center, Lexington, KY"
+},
+{
+"team": "Calvin",
+"season": "2026-27",
+"id": "9263",
+"opp": "Carthage College",
+"where": "away",
+"result": "L",
+"us": 53,
+"them": 65,
+"date": "2026-11-24",
+"att": 402,
+"site": "Tarble Arena, Kenosha, WI"
+},
+{
+"team": "Hope",
+"season": "2026-27",
+"id": "18643",
+"opp": "University of Wisconsin-Whitewater",
+"where": "away",
+"result": "L",
+"us": 68,
+"them": 69,
+"date": "2026-11-24",
+"att": 262,
+"site": "Williams Center, Whitewater, WI"
 }
 ]
 }
