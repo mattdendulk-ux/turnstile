@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-25T09:29-05:00",
+"updated": "2026-11-26T09:26-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -451,6 +451,32 @@
 "them": 63,
 "date": "2026-11-24",
 "att": 1076,
+"site": "O'Reilly Family Event Center, Springfield, MO"
+},
+{
+"team": "Drury",
+"season": "2026-27",
+"id": "11952",
+"opp": "Central Missouri",
+"where": "home",
+"result": "W",
+"us": 96,
+"them": 82,
+"date": "2026-11-25",
+"att": 908,
+"site": "O'Reilly Family Event Center, Springfield, MO"
+},
+{
+"team": "Pittsburg State",
+"season": "2026-27",
+"id": "15398",
+"opp": "William Jewell",
+"where": "neutral",
+"result": "W",
+"us": 72,
+"them": 58,
+"date": "2026-11-25",
+"att": 657,
 "site": "O'Reilly Family Event Center, Springfield, MO"
 }
 ]
