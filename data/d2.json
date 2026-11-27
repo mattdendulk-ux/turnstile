@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-26T09:26-05:00",
+"updated": "2026-11-27T09:25-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -478,6 +478,19 @@
 "date": "2026-11-25",
 "att": 657,
 "site": "O'Reilly Family Event Center, Springfield, MO"
+},
+{
+"team": "Black Hills State",
+"season": "2026-27",
+"id": "10375",
+"opp": "Simon Fraser",
+"where": "away",
+"result": "W",
+"us": 92,
+"them": 71,
+"date": "2026-11-26",
+"att": 522,
+"site": "West Gym, Burnaby, Canada"
 }
 ]
 }
