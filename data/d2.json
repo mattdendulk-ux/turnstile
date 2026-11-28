@@ -1,5 +1,5 @@
 {
-"updated": "2026-11-27T09:25-05:00",
+"updated": "2026-11-28T09:11-05:00",
 "division": "D2",
 "schools": [
 "Fort Hays State",
@@ -491,6 +491,19 @@
 "date": "2026-11-26",
 "att": 522,
 "site": "West Gym, Burnaby, Canada"
+},
+{
+"team": "Missouri Western",
+"season": "2026-27",
+"id": "9705",
+"opp": "Arkansas-Fort Smith",
+"where": "away",
+"result": "W",
+"us": 92,
+"them": 63,
+"date": "2026-11-27",
+"att": 934,
+"site": "Stubblefield Center, Fort Smith, AR"
 }
 ]
 }
